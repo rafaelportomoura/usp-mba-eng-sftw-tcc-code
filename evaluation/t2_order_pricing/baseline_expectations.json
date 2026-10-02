@@ -1,0 +1,25 @@
+{
+  "_comment": "Testes que devem falhar no baseline; ver RISKS.md para a causa por requisito.",
+  "public_fail": [],
+  "hidden_fail": [
+    "HiddenPricingTests.test_r1_customer_invalid",
+    "HiddenPricingTests.test_r1_empty_items",
+    "HiddenPricingTests.test_r1_invalid_item_fields",
+    "HiddenPricingTests.test_r2_accepts_tuple",
+    "HiddenPricingTests.test_r3_vip_rounding_half_up",
+    "HiddenPricingTests.test_r4_coupon_normalized",
+    "HiddenPricingTests.test_r4_fixed_capped",
+    "HiddenPricingTests.test_r4_fixed_capped_to_remaining_after_vip",
+    "HiddenPricingTests.test_r4_fixed_with_zero_remaining",
+    "HiddenPricingTests.test_r4_save10_half_up_on_remaining",
+    "HiddenPricingTests.test_r4_unknown_or_invalid_coupon",
+    "HiddenPricingTests.test_r5_tax_after_discounts",
+    "HiddenPricingTests.test_r5_tax_with_fixed_coupon",
+    "HiddenPricingTests.test_r6_components_rounded_individually",
+    "HiddenPricingTests.test_r6_half_up_tax_not_bankers",
+    "HiddenPricingTests.test_r6_large_quantity_times_price_exact",
+    "HiddenPricingTests.test_r6_large_values_exact_with_vip_and_coupon",
+    "HiddenPricingTests.test_r7_customer_without_vip_key_not_mutated",
+    "HiddenPricingTests.test_r7_inputs_not_mutated"
+  ]
+}

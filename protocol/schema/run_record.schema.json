@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registro consolidado de uma execucao (rascunho TCC-020)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "task_id",
+    "condition",
+    "replicate",
+    "model",
+    "codex_version",
+    "codex_interface",
+    "prompt_hash",
+    "baseline_hash",
+    "started_at",
+    "duration_s",
+    "exit_status",
+    "hidden_tests_passed",
+    "hidden_tests_total",
+    "output_words",
+    "trace_code",
+    "trace_tests",
+    "assumptions",
+    "risks",
+    "rationale",
+    "fidelity",
+    "reproducibility",
+    "auditability_total",
+    "err_validacao_entrada",
+    "err_regra_negocio",
+    "err_arredondamento_numerico",
+    "err_atomicidade_estado",
+    "err_idempotencia_conflito",
+    "err_contrato_api",
+    "err_outros",
+    "claims_checked",
+    "claimdiv_validacao_entrada",
+    "claimdiv_regra_negocio",
+    "claimdiv_arredondamento_numerico",
+    "claimdiv_atomicidade_estado",
+    "claimdiv_idempotencia_conflito",
+    "claimdiv_contrato_api",
+    "claimdiv_outros",
+    "claimdiv_relato_verificacao",
+    "rp_assumptions",
+    "rp_risks",
+    "rp_traces",
+    "rp_confirmed",
+    "notes"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^R[0-9]{2}$",
+      "description": "Identificador do manifesto (R01..R18)."
+    },
+    "task_id": {
+      "type": "string",
+      "enum": [
+        "t1_shipping",
+        "t2_order_pricing",
+        "t3_inventory_reservation"
+      ]
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "controle",
+        "explicacao"
+      ]
+    },
+    "replicate": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nome e versao/snapshot exatos do modelo; 'nao_exposto' se indisponivel."
+    },
+    "codex_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "codex_interface": {
+      "type": "string",
+      "enum": [
+        "cli",
+        "api"
+      ],
+      "description": "P3: interface do Codex usada (CLI ou API), conforme config congelada"
+    },
+    "prompt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 dos bytes exatos do prompt enviado."
+    },
+    "baseline_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "harness.workspace.baseline_hash da tarefa."
+    },
+    "started_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "duration_s": {
+      "type": "number",
+      "minimum": 0
+    },
+    "exit_status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "timeout",
+        "agent_error",
+        "infra_failure"
+      ]
+    },
+    "hidden_tests_passed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hidden_tests_total": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "output_words": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Palavras (regex \\w+) da mensagem final do agente."
+    },
+    "trace_code": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C1 rastreabilidade requisito-codigo"
+    },
+    "trace_tests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C2 rastreabilidade requisito-teste"
+    },
+    "assumptions": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C3 premissas"
+    },
+    "risks": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C4 riscos e limitacoes"
+    },
+    "rationale": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C5 justificativa tecnica"
+    },
+    "fidelity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C6 fidelidade ao codigo e aos testes"
+    },
+    "reproducibility": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "C7 verificabilidade e reprodutibilidade"
+    },
+    "auditability_total": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 14,
+      "description": "Soma de C1..C7."
+    },
+    "err_validacao_entrada": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como validacao_entrada (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_regra_negocio": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como regra_negocio (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_arredondamento_numerico": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como arredondamento_numerico (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_atomicidade_estado": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como atomicidade_estado (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_idempotencia_conflito": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como idempotencia_conflito (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_contrato_api": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como contrato_api (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "err_outros": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: testes ocultos reprovados classificados como outros (soma = hidden_tests_total - hidden_tests_passed)"
+    },
+    "claims_checked": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "P1: alegações verificáveis extraídas do relatório em C6 (0 no controle por regra)"
+    },
+    "claimdiv_validacao_entrada": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo validacao_entrada (0 no controle por regra)"
+    },
+    "claimdiv_regra_negocio": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo regra_negocio (0 no controle por regra)"
+    },
+    "claimdiv_arredondamento_numerico": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo arredondamento_numerico (0 no controle por regra)"
+    },
+    "claimdiv_atomicidade_estado": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo atomicidade_estado (0 no controle por regra)"
+    },
+    "claimdiv_idempotencia_conflito": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo idempotencia_conflito (0 no controle por regra)"
+    },
+    "claimdiv_contrato_api": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo contrato_api (0 no controle por regra)"
+    },
+    "claimdiv_outros": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo outros (0 no controle por regra)"
+    },
+    "claimdiv_relato_verificacao": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P1: alegações com divergência material do tipo relato_verificacao (0 no controle por regra)"
+    },
+    "rp_assumptions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P2: premissas verificáveis apontadas no relatório (contagem operacional, PROTOCOL.md seção 18)"
+    },
+    "rp_risks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P2: riscos, limitações ou pontos não verificados verificáveis apontados"
+    },
+    "rp_traces": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P2: ligações requisito-código/teste rastreáveis apontadas"
+    },
+    "rp_confirmed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "P2: pontos (premissas+riscos+ligações) que conferem com código, testes públicos e log"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "_comment": "MODELO. Nada aqui esta preenchido nem congelado. Preencher em TCC-040 (pos-piloto) copiando para execution_config.json com o que a propria execucao reportar (nunca de memoria). Valor indisponivel em parametros de geracao: usar a string 'nao_exposto' (nunca null) e registrar a limitacao. O freeze recusa qualquer null e recusa vazio, 'nao_exposto' ou ausencia nos campos de replicabilidade do Codex: model.name, model.version_or_snapshot, agent.codex_version, agent.interface ('cli' ou 'api'), agent.invocation_command, agent.flags (lista; vazia = nenhuma flag), agent.sandbox_mode, agent.approval_policy, execution.working_directory, execution.date_first_run. A data de cada execucao fica em started_at e run_meta.json; a data da ultima execucao nao pertence ao arquivo congelado. Itens exigidos por Baltes et al. (2025, v8), secoes 5.1-5.4 (fichamento TCC-010).",
+  "model": {
+    "role": "agente gerador de codigo, unico LLM do estudo, sem papel de avaliador",
+    "name": null,
+    "version_or_snapshot": null,
+    "provider": null,
+    "fingerprint_or_checksum": null
+  },
+  "agent": {
+    "tool": "Codex",
+    "codex_version": null,
+    "interface": null,
+    "interface_note": "interface usada: 'cli' ou 'api'; a diferenca de superficie (CLI, API) deve ser descrita no metodo do TCC",
+    "invocation_command": null,
+    "flags": null,
+    "sandbox_mode": null,
+    "approval_policy": null,
+    "tools_enabled": null,
+    "agent_config_files": [],
+    "agent_config_hash": null,
+    "vendor_system_prompt": "nao acessivel ao pesquisador; registrar como limitacao"
+  },
+  "generation_parameters": {
+    "reasoning_effort": null,
+    "temperature": null,
+    "top_p": null,
+    "max_output_tokens": null,
+    "other_defaults_recorded": null
+  },
+  "execution": {
+    "session_policy": "uma sessao nova por execucao; sem memoria, historico ou conversa compartilhados",
+    "timeout_s": 720,
+    "human_intervention": "nenhuma durante a execucao",
+    "workspace": "copia temporaria gerada por harness.cli prepare (baseline, REQUIREMENTS.md, tests/)",
+    "working_directory": null,
+    "network_policy": null,
+    "date_first_run": null,
+    "python_version": null,
+    "platform": null
+  },
+  "prompts": {
+    "controle": {
+      "path": "protocol/prompts/controle.md",
+      "sha256": null
+    },
+    "explicacao": {
+      "path": "protocol/prompts/explicacao.md",
+      "sha256": null
+    },
+    "prompt_development_history": null
+  },
+  "logs": {
+    "per_run_directory": "runs/<run_id>/",
+    "required_files": [
+      "prompt.txt",
+      "agent_events.jsonl",
+      "final_message.md",
+      "workspace.diff",
+      "prepare.json",
+      "evaluation.json",
+      "run_meta.json"
+    ],
+    "native_log_format_note": null,
+    "exclusion_registry": "runs/exclusions.jsonl"
+  }
+}

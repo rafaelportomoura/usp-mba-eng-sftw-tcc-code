@@ -1,0 +1,25 @@
+{
+  "_comment": "Testes que devem falhar no baseline; ver RISKS.md para a causa por requisito.",
+  "public_fail": [
+    "PublicShippingTests.test_r2_invalid_destination",
+    "PublicShippingTests.test_r4_regional_started_kg",
+    "PublicShippingTests.test_r6_express_minimum"
+  ],
+  "hidden_fail": [
+    "HiddenShippingTests.test_r1_weight_bool_nan_inf_str",
+    "HiddenShippingTests.test_r1_weight_negative",
+    "HiddenShippingTests.test_r1_weight_over_max",
+    "HiddenShippingTests.test_r1_weight_zero",
+    "HiddenShippingTests.test_r2_destination_invalid",
+    "HiddenShippingTests.test_r2_destination_normalized",
+    "HiddenShippingTests.test_r3_express_not_bool",
+    "HiddenShippingTests.test_r3_subtotal_invalid",
+    "HiddenShippingTests.test_r4_fractional_weights_round_up",
+    "HiddenShippingTests.test_r4_tiny_excess_still_started_kg",
+    "HiddenShippingTests.test_r5_threshold_inclusive",
+    "HiddenShippingTests.test_r6_express_due_when_free",
+    "HiddenShippingTests.test_r6_minimum_applies",
+    "HiddenShippingTests.test_r6_percentage_above_minimum",
+    "HiddenShippingTests.test_r6_rounding_half_up"
+  ]
+}

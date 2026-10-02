@@ -1,0 +1,11 @@
+[project]
+name = "tcc-auditabilidade-experimento"
+version = "0.1.0"
+description = "Artefatos reproduzíveis do experimento de auditabilidade de código gerado por agentes (TCC USP MBA)."
+readme = "README.md"
+requires-python = "==3.14.*"
+dependencies = []
+
+[tool.tcc]
+# Versão exata registrada em .python-version; o harness exige a mesma série (major.minor).
+python = "3.14.7"

@@ -1,0 +1,30 @@
+{
+  "_comment": "Testes que devem falhar no baseline; ver RISKS.md para a causa por requisito.",
+  "public_fail": [
+    "PublicInventoryTests.test_r1_unknown_sku",
+    "PublicInventoryTests.test_r4_idempotent_replay"
+  ],
+  "hidden_fail": [
+    "HiddenInventoryTests.test_r1_available_non_str_sku",
+    "HiddenInventoryTests.test_r1_constructor_validation",
+    "HiddenInventoryTests.test_r1_invalid_items",
+    "HiddenInventoryTests.test_r1_invalid_key",
+    "HiddenInventoryTests.test_r1_invalid_quantity",
+    "HiddenInventoryTests.test_r1_invalid_request_does_not_register_key",
+    "HiddenInventoryTests.test_r1_unknown_sku_and_available",
+    "HiddenInventoryTests.test_r1_validation_precedes_existing_key_lookup",
+    "HiddenInventoryTests.test_r2_atomic_multi_item_failure",
+    "HiddenInventoryTests.test_r3_key_is_normalized_in_result_and_event",
+    "HiddenInventoryTests.test_r4_replay_after_stock_exhausted",
+    "HiddenInventoryTests.test_r4_replay_same_result_any_order",
+    "HiddenInventoryTests.test_r5_conflict",
+    "HiddenInventoryTests.test_r5_conflict_precedence_over_stock",
+    "HiddenInventoryTests.test_r5_conflict_with_subset_or_changed_quantity_of_multi_item_key",
+    "HiddenInventoryTests.test_r5_key_compared_after_strip",
+    "HiddenInventoryTests.test_r6_events_chronological",
+    "HiddenInventoryTests.test_r6_events_is_copy",
+    "HiddenInventoryTests.test_r6_no_events_on_failures",
+    "HiddenInventoryTests.test_r7_items_not_aliased",
+    "HiddenInventoryTests.test_r7_stock_not_aliased"
+  ]
+}
