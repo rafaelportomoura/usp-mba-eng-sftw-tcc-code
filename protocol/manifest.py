@@ -22,6 +22,8 @@ CONDITIONS = ("controle", "explicacao")
 REPLICATES = (1, 2, 3)
 TIMEOUT_S = 720
 REEVALUATION_N = 6
+# Q12.2=B: a passagem 2 ocorre no mínimo 24 h depois da passagem 1 (fora do sprint de um dia).
+MIN_REEVAL_INTERVAL_H = 24
 LABEL_POOL = 24  # 18 avaliações + 6 reavaliações, todas com identificadores do mesmo formato
 
 _BLOCK_A_REPLICATES = (1, 2)
@@ -122,7 +124,8 @@ def blind_plan(runs, seed=SEED, reeval_n=REEVALUATION_N, eligible=None):
       tarefa, condição, repetição nem ordem de execução.
     - Passagem 1: todas as execuções elegíveis em ordem aleatória.
     - Passagem 2: reavaliação de `reeval_n` execuções, uma por célula (sorteada entre as elegíveis),
-      com NOVOS identificadores e em ordem aleatória; deve ocorrer após intervalo mínimo.
+      com NOVOS identificadores e em ordem aleatória; deve ocorrer no mínimo MIN_REEVAL_INTERVAL_H (24 h) depois
+      da passagem 1 (Q12.2=B); o intervalo é verificado em records.validate_reevaluation.
     `eligible`: conjunto de run_id realmente concluídos (padrão: todos).
     Retorna dict com pass1, pass2 (listas de {blind_id, run_id}, na ordem de apresentação)
     e key (blind_id -> run_id), que deve ficar fora do alcance do avaliador.

@@ -23,6 +23,7 @@ FROZEN_FILES = (
     "PROTOCOL.md",
     "RUBRIC.md",
     "taxonomy.py",
+    "sensitivity.py",
     "prompts/controle.md",
     "prompts/explicacao.md",
     "schema/run_record.schema.json",
@@ -95,6 +96,21 @@ def check_codex_interface_fields(cfg):
             problems.append(f"campo obrigatório vazio ou 'nao_exposto': {dotted}")
         elif dotted == "agent.interface" and value not in INTERFACES:
             problems.append(f"agent.interface deve ser um de {INTERFACES}, recebido {value!r}")
+    problems += check_author_choices(cfg)
+    return problems
+
+
+def check_author_choices(cfg):
+    """Q11: se `author_choices` existir, model.name e generation_parameters.reasoning_effort devem
+    coincidir com os valores escolhidos pelo autor (evita deriva entre a decisão e o congelado)."""
+    choices = cfg.get("author_choices") if isinstance(cfg, dict) else None
+    if not choices:
+        return []
+    problems = []
+    for chosen, dotted in (("model_name", "model.name"), ("reasoning_effort", "generation_parameters.reasoning_effort")):
+        value = _get_path(cfg, dotted)
+        if value != choices.get(chosen):
+            problems.append(f"{dotted}={value!r} diverge da escolha do autor em author_choices.{chosen}={choices.get(chosen)!r}")
     return problems
 
 

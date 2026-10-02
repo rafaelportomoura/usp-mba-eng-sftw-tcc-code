@@ -4,7 +4,8 @@
   python3 -m protocol.cli fallback                           lista as 12 execuções balanceadas
   python3 -m protocol.cli blind [--completed R01,R02,...]    plano de avaliação cega (inclui a chave)
   python3 -m protocol.cli validate FILE.csv [--fallback]     valida o CSV consolidado
-  python3 -m protocol.cli profile FILE.csv                   perfis descritivos de tipo de erro e de pontos de atenção (P1, P2)
+  python3 -m protocol.cli profile FILE.csv                   perfis descritivos de tipo de erro e de pontos de atenção (P1, P2, Q06)
+  python3 -m protocol.cli reeval FILE.csv                    valida a reavaliação (>= 24 h entre passagens) e resume distribuição e concordância por critério
   python3 -m protocol.cli freeze --release-ref F --confirm-oracles-released   CONGELA (não executar antes da liberação)
   python3 -m protocol.cli verify-freeze                      confere os arquivos contra FREEZE.json
 """
@@ -34,6 +35,8 @@ def main(argv=None):
     s.add_argument("file")
     s.add_argument("--fallback", action="store_true")
     s = sub.add_parser("profile")
+    s.add_argument("file")
+    s = sub.add_parser("reeval")
     s.add_argument("file")
     s = sub.add_parser("freeze")
     s.add_argument("--release-ref")
@@ -69,8 +72,17 @@ def main(argv=None):
             return 1
         print(json.dumps({"tipos_de_erro": descriptive.error_type_profile(recs),
                           "alegacoes_divergentes": descriptive.claim_divergence_profile(recs),
-                          "pontos_de_atencao": descriptive.review_summary(recs)},
+                          "pontos_de_atencao": descriptive.review_summary(recs),
+                          "pontos_de_atencao_do_artefato": descriptive.attention_summary(recs),
+                          "diferenca_pontos_do_artefato": descriptive.attention_difference(recs)},
                          indent=2, ensure_ascii=False))
+    elif args.cmd == "reeval":
+        rows = records.read_reevaluation_csv(Path(args.file).read_text(encoding="utf-8"))
+        errs = records.validate_reevaluation(rows, manifest.generate())
+        if errs:
+            print("\n".join(errs))
+            return 1
+        print(json.dumps(descriptive.reevaluation_summary(rows), indent=2, ensure_ascii=False))
     elif args.cmd == "freeze":
         problems = freeze_mod.check_preconditions(PROTOCOL_DIR, args.release_ref, args.confirm_oracles_released)
         if args.dry_run:

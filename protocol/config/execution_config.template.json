@@ -1,5 +1,12 @@
 {
   "_comment": "MODELO. Nada aqui esta preenchido nem congelado. Preencher em TCC-040 (pos-piloto) copiando para execution_config.json com o que a propria execucao reportar (nunca de memoria). Valor indisponivel em parametros de geracao: usar a string 'nao_exposto' (nunca null) e registrar a limitacao. O freeze recusa qualquer null e recusa vazio, 'nao_exposto' ou ausencia nos campos de replicabilidade do Codex: model.name, model.version_or_snapshot, agent.codex_version, agent.interface ('cli' ou 'api'), agent.invocation_command, agent.flags (lista; vazia = nenhuma flag), agent.sandbox_mode, agent.approval_policy, execution.working_directory, execution.date_first_run. A data de cada execucao fica em started_at e run_meta.json; a data da ultima execucao nao pertence ao arquivo congelado. Itens exigidos por Baltes et al. (2025, v8), secoes 5.1-5.4 (fichamento TCC-010).",
+  "author_choices": {
+    "_comment": "Valores ESCOLHIDOS pelo autor (Q11, 2026-10-02), nao observados em execucao. Ao criar execution_config.json (pos-piloto), copiar model_name para model.name e reasoning_effort para generation_parameters.reasoning_effort; o freeze recusa se divergirem. Nao ha snapshot nem versao do modelo aqui: model.version_or_snapshot continua sendo o que a propria execucao reportar. A existencia de gpt-5.5 com esforco medium foi conferida no models_cache do Codex local do autor, sem execucao.",
+    "model_name": "gpt-5.5",
+    "reasoning_effort": "medium",
+    "decided_by": "autor",
+    "decision": "Q11"
+  },
   "model": {
     "role": "agente gerador de codigo, unico LLM do estudo, sem papel de avaliador",
     "name": null,
@@ -63,5 +70,18 @@
     ],
     "native_log_format_note": null,
     "exclusion_registry": "runs/exclusions.jsonl"
+  },
+  "executor_plan": {
+    "_comment": "DOCUMENTACAO do executor (executor/, TCC-040-prep). Nao substitui os campos agent.* acima, que continuam nulos ate o preenchimento pos-piloto; `python3 -m executor.cli flags` imprime os valores a copiar. Nada aqui foi observado em execucao real.",
+    "interface": "cli (codex exec nao interativo; decisao do autor em Q02)",
+    "codex_version_expected_by_author": "codex-cli 0.154.0 (Q02); o executor registra a saida real de `codex --version` e recusa divergencia se agent.codex_version estiver preenchido",
+    "sandbox_mode": "workspace-write (flag --sandbox; escopo de leitura do disco nao verificado)",
+    "user_config_policy": "--ignore-user-config e --ignore-rules; CODEX_HOME descartavel fora dos repositorios, HOME descartavel, ambiente por allowlist; modelo e esforco apenas via execution_config (model.name, generation_parameters.reasoning_effort); valores escolhidos pelo autor em Q11 (gpt-5.5, medium) em author_choices, a copiar no preenchimento",
+    "credentials_policy": "copiadas em tempo de execucao de caminho explicito (--auth-file) para o CODEX_HOME descartavel, apagado ao final; nunca gravadas em repositorio; varredura e redacao de segredos em runs/<run_id>/",
+    "prompt_delivery": "bytes de protocol/prompts/<condicao>.md via stdin (argumento '-'); o enunciado da tarefa e REQUIREMENTS.md dentro do workspace",
+    "session_timeout_s": 720,
+    "session_kill": "SIGKILL ao grupo de processos (start_new_session)",
+    "approval_policy_note": "nao definido pelo executor; registrar o que o Codex reportar no piloto",
+    "network_policy_note": "nao verificado; registrar apos piloto"
   }
 }

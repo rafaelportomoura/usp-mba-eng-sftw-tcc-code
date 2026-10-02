@@ -47,6 +47,11 @@
     "rp_risks",
     "rp_traces",
     "rp_confirmed",
+    "ap_decisions",
+    "ap_risks",
+    "ap_links",
+    "ap_confirmed",
+    "ap_from_summary",
     "notes"
   ],
   "properties": {
@@ -280,6 +285,31 @@
       "type": "integer",
       "minimum": 0,
       "description": "P2: pontos (premissas+riscos+ligações) que conferem com código, testes públicos e log"
+    },
+    "ap_decisions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Q06: pontos de atenção verificáveis do tipo decisão/premissa, contados na visão do artefato sem relatório estruturado (PROTOCOL.md seção 21), mesmas regras nas duas condições"
+    },
+    "ap_risks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Q06: pontos de atenção verificáveis do tipo risco, limitação ou ponto não verificado, na visão do artefato sem relatório estruturado"
+    },
+    "ap_links": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Q06: pontos de atenção verificáveis do tipo ligação requisito-código/teste, na visão do artefato sem relatório estruturado"
+    },
+    "ap_confirmed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Q06: pontos de atenção do artefato (decisões+riscos+ligações) que conferem com o código final, testes públicos e log"
+    },
+    "ap_from_summary": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Q06: quantos dos pontos do artefato vêm do resumo final livre (os demais vêm das linhas adicionadas em workspace.diff); <= soma dos três tipos"
     },
     "notes": {
       "type": "string"

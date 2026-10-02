@@ -8,6 +8,7 @@ import csv
 import io
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 
 from . import manifest as manifest_mod
@@ -15,14 +16,19 @@ from . import taxonomy
 
 PROTOCOL_DIR = Path(__file__).resolve().parent
 SCHEMA_PATH = PROTOCOL_DIR / "schema" / "run_record.schema.json"
+REEVAL_PATH = PROTOCOL_DIR / "schema" / "reevaluation_header.csv"
 SCORE_FIELDS = ("trace_code", "trace_tests", "assumptions", "risks", "rationale", "fidelity", "reproducibility")
 ERR_FIELDS = tuple(taxonomy.err_field(t) for t in taxonomy.ERROR_TYPES)
 CLAIM_FIELDS = tuple(taxonomy.claim_field(t) for t in taxonomy.CLAIM_TYPES)
 RP_FIELDS = ("rp_assumptions", "rp_risks", "rp_traces")
+# Q06: pontos de atenção do artefato sem relatório estruturado; mesmas regras nas duas condições.
+AP_FIELDS = ("ap_decisions", "ap_risks", "ap_links")
 # Arquivos produzidos na pontuação (depois da execução); não fazem parte de REQUIRED_RUN_FILES.
 SCORING_RUN_FILES = (
     "error_classification.json",  # P1: um item por teste oculto reprovado e por alegação divergente
     "review_points.json",         # P2: itens contados, com o veredito de cada um
+    "artifact_attention.json",    # Q06: pontos de atenção do artefato (sem relatório), com fonte e veredito
+    "sensitivity_inputs.json",    # Q12.1=A: contagens de C2 e C6 para a análise de sensibilidade (protocol/sensitivity.py)
 )
 # Registro de revisão humana de trechos gerados e reutilizados no texto (P4); só o cabeçalho é fixo.
 AI_REVIEW_FIELDS = ("item_id", "origem", "run_id", "destino_no_texto", "tipo_uso", "revisor",
@@ -111,6 +117,12 @@ def validate_record(record, schema=None):
     points = sum(record[f] for f in RP_FIELDS)
     if record["rp_confirmed"] > points:
         errors.append("rp_confirmed excede a soma de rp_assumptions, rp_risks e rp_traces")
+    # Q06: regras idênticas para as duas condições (nenhuma ramificação por `condition`).
+    ap_points = sum(record[f] for f in AP_FIELDS)
+    if record["ap_confirmed"] > ap_points:
+        errors.append("ap_confirmed excede a soma de ap_decisions, ap_risks e ap_links")
+    if record["ap_from_summary"] > ap_points:
+        errors.append("ap_from_summary excede a soma de ap_decisions, ap_risks e ap_links")
     if record["exit_status"] == "timeout" and record["duration_s"] < manifest_mod.TIMEOUT_S * 0.99:
         errors.append("timeout com duration_s inferior ao limite de 12 minutos")
     return errors
@@ -216,3 +228,89 @@ def check_run_dir(path):
 def count_words(text):
     """Palavras da mensagem final: sequências \\w+ (hífen/apóstrofo internos unem). Pipes e '---' de tabelas não contam."""
     return len(re.findall(r"\w+(?:[’'-]\w+)*", text))
+
+
+# --- Reavaliação (passagem 2), Q12.2=B -------------------------------------------------------
+def reevaluation_header():
+    return REEVAL_PATH.read_text(encoding="utf-8").strip().split(",")
+
+
+def parse_timestamp(value):
+    """ISO 8601 com data, hora e fuso (`Z` ou ±hh:mm). Levanta ValueError caso contrário."""
+    if not isinstance(value, str) or not re.search(r"T\d{2}:\d{2}", value):
+        raise ValueError(f"data/hora ausente ou sem hora: {value!r}")
+    dt = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        raise ValueError(f"data/hora sem fuso horário: {value!r}")
+    return dt
+
+
+def read_reevaluation_csv(text):
+    reader = csv.DictReader(io.StringIO(text))
+    expected = reevaluation_header()
+    if reader.fieldnames != expected:
+        raise ValueError(f"cabeçalho inválido: {reader.fieldnames} != {expected}")
+    rows = []
+    for r in reader:
+        for f in SCORE_FIELDS + ("auditability_total", "pass"):
+            try:
+                r[f] = int(r[f])
+            except (TypeError, ValueError):
+                pass
+        rows.append(r)
+    return rows
+
+
+def validate_reevaluation(rows, manifest_runs=None, min_interval_h=None):
+    """Valida o CSV de pontuações (passagens 1 e 2). Retorna lista de erros (vazia = válido).
+
+    Regras: cada linha com notas 0-2 e total igual à soma; `pass` em {1, 2}; `scored_at` com data, hora e
+    fuso das DUAS passagens; blind_id único em todo o arquivo e nenhum reutilizado entre passagens;
+    cada run_id da passagem 2 existe na passagem 1; e, por artefato, a passagem 2 ocorre no mínimo
+    `min_interval_h` (padrão 24 h, Q12.2=B) depois da passagem 1. Com `manifest_runs`, a passagem 2 tem
+    exatamente um artefato por célula (6) e todo run_id existe no manifesto.
+    """
+    min_interval_h = manifest_mod.MIN_REEVAL_INTERVAL_H if min_interval_h is None else min_interval_h
+    errors = []
+    times = {}
+    for i, r in enumerate(rows, start=2):
+        tag = f"linha {i} ({r.get('blind_id', '?')})"
+        if r.get("pass") not in (1, 2):
+            errors.append(f"{tag}: pass deve ser 1 ou 2")
+            continue
+        for f in SCORE_FIELDS:
+            v = r.get(f)
+            if not isinstance(v, int) or isinstance(v, bool) or not 0 <= v <= 2:
+                errors.append(f"{tag}: {f} deve ser inteiro de 0 a 2")
+        if all(isinstance(r.get(f), int) for f in SCORE_FIELDS) and r.get("auditability_total") != sum(r[f] for f in SCORE_FIELDS):
+            errors.append(f"{tag}: auditability_total difere da soma dos itens")
+        try:
+            times[(r["run_id"], r["pass"])] = parse_timestamp(r.get("scored_at"))
+        except ValueError as exc:
+            errors.append(f"{tag}: scored_at inválido ({exc})")
+    if errors:
+        return errors
+    ids = [r["blind_id"] for r in rows]
+    if len(set(ids)) != len(ids):
+        errors.append("blind_id repetido (a passagem 2 usa novos identificadores)")
+    p1 = {r["run_id"] for r in rows if r["pass"] == 1}
+    p2 = [r["run_id"] for r in rows if r["pass"] == 2]
+    if len(set(p2)) != len(p2):
+        errors.append("run_id repetido na passagem 2")
+    for rid in p2:
+        if rid not in p1:
+            errors.append(f"{rid}: reavaliado sem pontuação na passagem 1")
+            continue
+        gap_h = (times[(rid, 2)] - times[(rid, 1)]).total_seconds() / 3600
+        if gap_h < min_interval_h:
+            errors.append(f"{rid}: intervalo entre passagens de {gap_h:.2f} h, inferior ao mínimo de {min_interval_h} h")
+    if manifest_runs is not None:
+        index = {m["run_id"]: (m["task_id"], m["condition"]) for m in manifest_runs}
+        for rid in p1 | set(p2):
+            if rid not in index:
+                errors.append(f"{rid}: ausente do manifesto")
+        if not errors:
+            cells = sorted(index[rid] for rid in p2)
+            if cells != sorted(manifest_mod.cells()):
+                errors.append("a passagem 2 deve ter exatamente um artefato por célula")
+    return errors

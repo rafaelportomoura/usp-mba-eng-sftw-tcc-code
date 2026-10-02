@@ -45,3 +45,20 @@ Metadados (`prepare.json`, `evaluation.json`) ficam em `runs/<run_id>/`, fora do
 - `prepare.json`/`evaluation.json` registram hashes de baseline, REQUIREMENTS.md, testes públicos, oráculo e harness, Python e commit git. `evaluation_bundle_hash` (todo `evaluation/`) e `task_evaluation_hash` (`evaluation/<tarefa>/`) cobrem também referências, alternativas, mutantes, `RISKS.md` e `baseline_expectations.json`, sem expor conteúdo.
 - Dois timeouts distintos: (1) `test_timeout_s` (padrão 120 s, `runner.DEFAULT_TIMEOUT_S`) limita CADA execução de suíte (pública e oculta, separadamente) feita pelo harness e é registrado em `evaluation.json`; (2) o timeout da SESSÃO do agente (ex.: 12 min no relatório do agente, definido em TCC-020/protocolo) é externo ao harness, que não o impõe nem o registra. Não confundir: um `timeout` de teste vira `hidden_status`/`public_status = "timeout"`; estourar a sessão do agente é registrado no protocolo, não aqui.
 - Limite conhecido: o código do agente roda como o usuário, sem sandbox de SO/rede; o isolamento de `evaluation/` durante a sessão do agente depende da configuração do Codex (TCC-020).
+
+## Executor do Codex (`executor/`, preparação de TCC-040)
+
+Executa `codex exec` (codex-cli 0.154.0, decisão Q02) por `run_id`, com `CODEX_HOME` e `HOME` descartáveis fora dos
+repositórios, `--ignore-user-config --ignore-rules`, sandbox `workspace-write`, timeout de 720 s com kill do grupo,
+captura completa em `runs/<run_id>/` e avaliação pelo harness. Modelo e esforço vêm só do `execution_config.json`
+(escolhidos pelo autor em Q11: `gpt-5.5`, esforço `medium`, em `author_choices` do template; snapshot e versão vêm da execução). Credenciais: `--auth-file` explícito, copiado para o `CODEX_HOME` e apagado; nunca versionadas.
+
+```
+python3 -m unittest discover -s executor/tests -t .      # usa um `codex` falso; não consome cota
+python3 -m executor.cli flags                            # valores para agent.flags / agent.invocation_command
+python3 -m executor.cli dry-run --config CFG --task t1_shipping --condition controle
+python3 -m executor.cli run --config CFG --task T --condition C --run-id P1 --auth-file AUTH --scratch-dir DIR
+python3 -m executor.cli run-all --config CFG --manifest protocol/manifest.json --auth-file AUTH --scratch-dir DIR
+```
+
+Execuções reais exigem `protocol/FREEZE.json` íntegro (`--allow-unfrozen` só para ensaios, registrado em `run_meta.json`).

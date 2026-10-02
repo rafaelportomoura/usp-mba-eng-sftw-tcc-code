@@ -1,2 +1,9 @@
 __pycache__/
 *.pyc
+
+# Credenciais e CODEX_HOME: nunca versionar (o executor usa CODEX_HOME descartável fora do repositório)
+auth.json
+*.auth.json
+.codex/
+codex_home/
+runs/*/codex_home*/

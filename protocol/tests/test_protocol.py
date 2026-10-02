@@ -45,6 +45,8 @@ def good_record(**over):
         "claims_checked": 0, **{f: 0 for f in records.CLAIM_FIELDS},
         # P2: controle sem relatório: zeros explícitos
         "rp_assumptions": 0, "rp_risks": 0, "rp_traces": 0, "rp_confirmed": 0,
+        # Q06: pontos do artefato (sem relatório); zeros explícitos
+        "ap_decisions": 0, "ap_risks": 0, "ap_links": 0, "ap_confirmed": 0, "ap_from_summary": 0,
     }
     r.update(over)
     return r
@@ -228,7 +230,8 @@ class SchemaTests(unittest.TestCase):
                     "trace_code,trace_tests,assumptions,risks,rationale,fidelity,reproducibility,"
                     "auditability_total,"
                     + ",".join(records.ERR_FIELDS) + ",claims_checked," + ",".join(records.CLAIM_FIELDS)
-                    + ",rp_assumptions,rp_risks,rp_traces,rp_confirmed,notes")
+                    + ",rp_assumptions,rp_risks,rp_traces,rp_confirmed,"
+                    + ",".join(records.AP_FIELDS) + ",ap_confirmed,ap_from_summary,notes")
         self.assertEqual(",".join(records.header()), expected)
         self.assertEqual((PROTOCOL_DIR / "schema" / "results_header.csv").read_text().strip(), expected)
         self.assertEqual(records.load_schema()["required"], records.header())
@@ -288,6 +291,10 @@ class RecordValidationTests(unittest.TestCase):
                                                    claimdiv_regra_negocio=1, claimdiv_contrato_api=1),
             "claims_over_10": good_record(condition="explicacao", claims_checked=11),
             "rp_confirmed_exceeds": good_record(rp_assumptions=1, rp_confirmed=2),
+            "ap_confirmed_exceeds": good_record(ap_decisions=1, ap_confirmed=2),
+            "ap_from_summary_exceeds": good_record(ap_links=1, ap_from_summary=2),
+            "ap_negative": good_record(ap_risks=-1),
+            "ap_missing_in_explicacao_too": good_record(condition="explicacao", ap_links=2, ap_confirmed=3),
             "total_total_zero": good_record(hidden_tests_total=0, hidden_tests_passed=0),
         }
         for name, rec in cases.items():
@@ -381,6 +388,87 @@ class P1P2RecordTests(unittest.TestCase):
         h = (PROTOCOL_DIR / "schema" / "ai_review_log_header.csv").read_text().strip().split(",")
         self.assertEqual(tuple(h), records.AI_REVIEW_FIELDS)
         self.assertEqual(set(records.SCORING_RUN_FILES) & set(records.REQUIRED_RUN_FILES), set())
+
+
+class ArtifactAttentionTests(unittest.TestCase):
+    """Q06: medida de pontos de atenção do artefato, igual nas duas condições."""
+
+    def test_same_rules_both_conditions(self):
+        for cond in ("controle", "explicacao"):
+            ok = good_record(condition=cond, ap_decisions=1, ap_risks=1, ap_links=2, ap_confirmed=3, ap_from_summary=2)
+            self.assertEqual(records.validate_record(ok), [], cond)
+            self.assertTrue(records.validate_record({**ok, "ap_confirmed": 5}), cond)
+            self.assertTrue(records.validate_record({**ok, "ap_from_summary": 5}), cond)
+
+    def test_controle_may_have_points_and_zero_is_valid(self):
+        self.assertEqual(records.validate_record(good_record(ap_links=3, ap_confirmed=2)), [])
+        self.assertEqual(records.validate_record(good_record()), [])
+
+    def test_fields_in_schema_header_and_scoring_files(self):
+        self.assertEqual(set(records.AP_FIELDS + ("ap_confirmed", "ap_from_summary")) - set(records.header()), set())
+        self.assertIn("artifact_attention.json", records.SCORING_RUN_FILES)
+        self.assertNotIn("artifact_attention.json", records.REQUIRED_RUN_FILES)
+
+    def test_csv_roundtrip(self):
+        rec = good_record(ap_decisions=2, ap_risks=1, ap_links=1, ap_confirmed=3, ap_from_summary=1)
+        self.assertEqual(records.read_csv(records.write_csv([rec])), [rec])
+
+    def test_summary_fraction_not_imputed_and_summary_split(self):
+        c1 = good_record(run_id="R01")
+        c2 = good_record(run_id="R02", ap_decisions=1, ap_links=1, ap_confirmed=1, ap_from_summary=1)
+        e1 = good_record(run_id="R03", condition="explicacao", ap_decisions=2, ap_risks=1, ap_links=1,
+                         ap_confirmed=4, ap_from_summary=0)
+        e2 = good_record(run_id="R04", condition="explicacao", ap_links=2, ap_confirmed=1, ap_from_summary=1)
+        s = descriptive.attention_summary([c1, c2, e1, e2])
+        self.assertEqual(s["controle"]["runs_with_points"], 1)
+        self.assertEqual(s["controle"]["median_points"], 1)          # mediana de [0, 2]
+        self.assertEqual(s["controle"]["median_fraction"], 0.5)      # só a execução com pontos
+        self.assertEqual(s["controle"]["median_points_without_summary"], 0.5)  # [0, 1]
+        self.assertEqual(s["explicacao"]["pooled_fraction"], 5 / 6)
+        self.assertEqual(s["explicacao"]["median_from_summary"], 0.5)
+        self.assertIsNone(descriptive.attention_fraction(c1))
+        self.assertEqual(descriptive.attention_difference([c1, c2, e1, e2])["median_points"], 3.0 - 1)
+
+    def test_summary_none_when_no_points(self):
+        s = descriptive.attention_summary([good_record(), good_record(condition="explicacao")])
+        self.assertIsNone(s["controle"]["median_fraction"])
+        self.assertIsNone(s["explicacao"]["pooled_fraction"])
+        self.assertEqual(s["controle"]["median_points"], 0)
+
+    def test_difference_none_without_both_conditions(self):
+        self.assertIsNone(descriptive.attention_difference([good_record()]))
+
+    def test_validator_has_no_condition_branch_for_ap(self):
+        import inspect
+        src = inspect.getsource(records.validate_record)
+        ap_block = src[src.index("# Q06"):src.index('record["exit_status"] == "timeout"')]
+        self.assertNotIn('record["condition"]', ap_block)
+
+    def test_prompts_differ_only_by_report_block(self):
+        c = (PROTOCOL_DIR / "prompts" / "controle.md").read_text(encoding="utf-8")
+        e = (PROTOCOL_DIR / "prompts" / "explicacao.md").read_text(encoding="utf-8")
+        self.assertTrue(e.startswith(c))
+        self.assertTrue(e[len(c):].lstrip().startswith("Relatório final obrigatório"))
+
+    def test_protocol_records_q03_q04_q06_decisions(self):
+        text = (PROTOCOL_DIR / "PROTOCOL.md").read_text(encoding="utf-8")
+        for needle in ("Q03=A", "Q04=A", "Q06=B", "## 22.", "## 21.", "sem LLM avaliador", "Benchmarking",
+                       "por analogia", "repetição ou deriva", "Q05"):
+            self.assertIn(needle, text, needle)
+        sec22 = text[text.index("## 22."):]
+        for item in ("5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"):
+            self.assertIn(f"({item})", sec22, item)
+
+    def test_q05_thresholds_untouched(self):
+        rubric = (PROTOCOL_DIR / "RUBRIC.md").read_text(encoding="utf-8")
+        for needle in ("Pelo menos 75% dos requisitos", "Pelo menos 5 alegações", "Pelo menos 50% dos requisitos",
+                       "são **decisões metodológicas do autor** (Q12.1=A)"):
+            self.assertIn(needle, rubric, needle)
+
+    def test_protocol_documents_ap_measure(self):
+        text = (PROTOCOL_DIR / "PROTOCOL.md").read_text(encoding="utf-8")
+        for f in records.AP_FIELDS + ("ap_confirmed", "ap_from_summary"):
+            self.assertIn(f, text)
 
 
 class DescriptiveTests(unittest.TestCase):
@@ -528,7 +616,10 @@ class FreezeTests(unittest.TestCase):
             if isinstance(v, dict):
                 return {k: fill(x, k) for k, x in v.items()}
             return v
-        (self.dir / "config" / "execution_config.json").write_text(json.dumps(fill(cfg)))
+        filled = fill(cfg)
+        filled["model"]["name"] = cfg["author_choices"]["model_name"]
+        filled["generation_parameters"]["reasoning_effort"] = cfg["author_choices"]["reasoning_effort"]
+        (self.dir / "config" / "execution_config.json").write_text(json.dumps(filled))
         self.release = Path(self._tmp.name) / "review.md"
         self.release.write_text("liberado")
 
@@ -591,6 +682,7 @@ class FreezeTests(unittest.TestCase):
         self.assertTrue(self._write_cfg(lambda c: c["agent"].__setitem__("flags", [""])))
         self.assertTrue(self._write_cfg(lambda c: c["agent"].__setitem__("codex_version", "nao_exposto")))
         self.assertTrue(self._write_cfg(lambda c: c["model"].__setitem__("name", "  ")))
+        self._write_cfg(lambda c: c["model"].__setitem__("name", "gpt-5.5"))
 
     def test_interface_must_be_cli_or_api(self):
         self.assertTrue(any("interface" in p for p in self._write_cfg(lambda c: c["agent"].__setitem__("interface", "web"))))
@@ -656,6 +748,360 @@ class CliTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(cli.main(["validate", str(p)]), 0)
                 self.assertEqual(cli.main(["validate", str(p), "--fallback"]), 1)
+
+
+
+def reeval_row(blind_id, run_id, pass_no, scored_at, scores=(2, 1, 1, 0, 2, 1, 1), notes=""):
+    row = {"blind_id": blind_id, "run_id": run_id, "pass": pass_no, "scored_at": scored_at}
+    row.update(dict(zip(records.SCORE_FIELDS, scores)))
+    row["auditability_total"] = sum(scores)
+    row["notes"] = notes
+    return row
+
+
+def full_reeval_rows(gap_hours=24, scores2=None):
+    """Passagem 1 de todas as 18 execuções e passagem 2 de uma por célula, `gap_hours` depois."""
+    runs = manifest.generate()
+    plan = manifest.blind_plan(runs)
+    rows = []
+    t1 = "2026-10-02T20:00:00-03:00"
+    for e in plan["pass1"]:
+        rows.append(reeval_row(e["blind_id"], e["run_id"], 1, t1))
+    from datetime import datetime, timedelta
+    t2 = (datetime.fromisoformat(t1) + timedelta(hours=gap_hours)).isoformat()
+    for e in plan["pass2"]:
+        rows.append(reeval_row(e["blind_id"], e["run_id"], 2, t2, scores=scores2 or (2, 1, 1, 0, 2, 1, 1)))
+    return rows
+
+
+class ReevaluationIntervalTests(unittest.TestCase):
+    """Q12.2=B: passagem 2 no mínimo 24 h depois, com data/hora das duas passagens."""
+
+    def test_minimum_interval_is_24_hours(self):
+        self.assertEqual(manifest.MIN_REEVAL_INTERVAL_H, 24)
+
+    def test_valid_at_exactly_24h(self):
+        self.assertEqual(records.validate_reevaluation(full_reeval_rows(24), manifest.generate()), [])
+
+    def test_valid_next_day(self):
+        self.assertEqual(records.validate_reevaluation(full_reeval_rows(30), manifest.generate()), [])
+
+    def test_rejects_old_60_minute_interval(self):
+        errs = records.validate_reevaluation(full_reeval_rows(1), manifest.generate())
+        self.assertTrue(errs and all("inferior ao mínimo de 24 h" in e for e in errs))
+        self.assertEqual(len(errs), 6)
+
+    def test_rejects_just_under_24h(self):
+        errs = records.validate_reevaluation(full_reeval_rows(23.99), manifest.generate())
+        self.assertEqual(len(errs), 6)
+
+    def test_requires_time_and_timezone_of_both_passes(self):
+        for bad in ("2026-10-02", "2026-10-03T20:00:00", "", "ontem"):
+            rows = full_reeval_rows(24)
+            rows[-1]["scored_at"] = bad
+            self.assertTrue(any("scored_at" in e for e in records.validate_reevaluation(rows)), bad)
+        rows = full_reeval_rows(24)
+        rows[0]["scored_at"] = "2026-10-02"
+        self.assertTrue(any("scored_at" in e for e in records.validate_reevaluation(rows)))
+
+    def test_accepts_z_and_offset_forms(self):
+        self.assertEqual(records.parse_timestamp("2026-10-02T23:00:00Z").utcoffset().total_seconds(), 0)
+        self.assertEqual(records.parse_timestamp("2026-10-02T20:00:00-03:00").utcoffset().total_seconds(), -3 * 3600)
+
+    def test_interval_is_computed_across_time_zones(self):
+        rows = full_reeval_rows(24)
+        pass2 = [r for r in rows if r["pass"] == 2]
+        pass2[0]["scored_at"] = "2026-10-03T22:30:00Z"  # 19:30 -03:00 do dia 3: 23,5 h depois de 20:00 -03:00 do dia 2
+        errs = records.validate_reevaluation(rows)
+        self.assertEqual(len(errs), 1)
+
+    def test_rejects_reused_blind_id_and_missing_pass1(self):
+        rows = full_reeval_rows(24)
+        pass2 = [r for r in rows if r["pass"] == 2]
+        pass2[0]["blind_id"] = rows[0]["blind_id"]
+        self.assertTrue(any("blind_id repetido" in e for e in records.validate_reevaluation(rows)))
+        rows = [r for r in full_reeval_rows(24) if not (r["pass"] == 1 and r["run_id"] == next(x for x in full_reeval_rows(24) if x["pass"] == 2)["run_id"])]
+        self.assertTrue(any("sem pontuação na passagem 1" in e for e in records.validate_reevaluation(rows)))
+
+    def test_rejects_bad_scores_and_total(self):
+        rows = full_reeval_rows(24)
+        rows[0]["trace_code"] = 3
+        self.assertTrue(any("trace_code" in e for e in records.validate_reevaluation(rows)))
+        rows = full_reeval_rows(24)
+        rows[0]["auditability_total"] += 1
+        self.assertTrue(any("soma" in e for e in records.validate_reevaluation(rows)))
+
+    def test_requires_one_artifact_per_cell(self):
+        rows = full_reeval_rows(24)
+        last = [i for i, r in enumerate(rows) if r["pass"] == 2][-1]
+        del rows[last]
+        self.assertTrue(any("um artefato por célula" in e for e in records.validate_reevaluation(rows, manifest.generate())))
+
+    def test_csv_round_trip_and_header(self):
+        header = records.reevaluation_header()
+        self.assertEqual(header[:4], ["blind_id", "run_id", "pass", "scored_at"])
+        buf = io.StringIO()
+        w = csv.DictWriter(buf, fieldnames=header, lineterminator="\n")
+        w.writeheader()
+        rows = full_reeval_rows(24)
+        w.writerows(rows)
+        back = records.read_reevaluation_csv(buf.getvalue())
+        self.assertEqual(back, rows)
+        self.assertEqual(records.validate_reevaluation(back, manifest.generate()), [])
+        with self.assertRaises(ValueError):
+            records.read_reevaluation_csv("a,b\n1,2\n")
+
+    def test_summary_reports_distribution_matrix_and_intervals(self):
+        rows = full_reeval_rows(26, scores2=(2, 2, 1, 0, 1, 1, 1))
+        s = descriptive.reevaluation_summary(rows)
+        self.assertEqual(s["pairs"], 6)
+        self.assertEqual(set(s["intervals_h"].values()), {26.0})
+        tt = s["criteria"]["trace_tests"]  # passagem 1 = 1, passagem 2 = 2 em todos
+        self.assertEqual(tt["distribution_pass1"], [0, 6, 0])
+        self.assertEqual(tt["distribution_pass2"], [0, 0, 6])
+        self.assertEqual(tt["matrix_pass1_rows_pass2_cols"][1][2], 6)
+        self.assertEqual(tt["exact_agreement"], 0.0)
+        self.assertEqual(tt["mean_abs_difference"], 1.0)
+        self.assertEqual(s["criteria"]["trace_code"]["exact_agreement"], 1.0)
+        self.assertEqual(s["total_mean_abs_difference"], 0.0)  # +1 em C2 compensa -1 em C5; por isso se relata por critério
+        self.assertEqual(s["criteria"]["rationale"]["mean_abs_difference"], 1.0)
+        for c in records.SCORE_FIELDS:
+            self.assertEqual(sum(s["criteria"][c]["distribution_pass2"]), 6)
+
+    def test_summary_without_pairs(self):
+        s = descriptive.reevaluation_summary([r for r in full_reeval_rows(24) if r["pass"] == 1])
+        self.assertEqual(s["pairs"], 0)
+        self.assertIsNone(s["total_mean_abs_difference"])
+
+    def test_cli_reeval_ok_and_rejects(self):
+        import contextlib
+        from protocol import cli
+        with tempfile.TemporaryDirectory() as d:
+            for gap, expected in ((30, 0), (1, 1)):
+                path = Path(d) / f"r{gap}.csv"
+                buf = io.StringIO()
+                w = csv.DictWriter(buf, fieldnames=records.reevaluation_header(), lineterminator="\n")
+                w.writeheader()
+                w.writerows(full_reeval_rows(gap))
+                path.write_text(buf.getvalue())
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    self.assertEqual(cli.main(["reeval", str(path)]), expected)
+                if expected:
+                    self.assertIn("inferior ao mínimo de 24 h", out.getvalue())
+                else:
+                    self.assertIn("distribution_pass1", out.getvalue())
+
+    def test_blind_plan_unchanged_by_interval(self):
+        plan = manifest.blind_plan(manifest.generate())
+        self.assertEqual(len(plan["pass1"]), 18)
+        self.assertEqual(len(plan["pass2"]), 6)
+
+    def test_docs_state_24h_and_no_60_minutes_as_current_rule(self):
+        proto = (PROTOCOL_DIR / "PROTOCOL.md").read_text()
+        rubric = (PROTOCOL_DIR / "RUBRIC.md").read_text()
+        for text in (proto, rubric):
+            self.assertIn("24 h", text)
+            self.assertIn("distribuição", text)
+            self.assertNotIn("intervalo mínimo de 60 minutos", text)
+        self.assertIn("fora do sprint", proto)
+        self.assertIn("Cronograma da avaliação", proto)
+        self.assertIn("scored_at", proto)
+
+
+class SensitivityTests(unittest.TestCase):
+    def inp(self, **over):
+        d = {"n_requirements": 7, "c2_valid_refs": 6, "c2_rest_declared": 1,
+             "c6_claims": 5, "c6_material": 0, "c6_minor": 0}
+        d.update(over)
+        return d
+
+    def test_official_cuts_reproduce_rubric_anchors(self):
+        from protocol import sensitivity as sens
+        self.assertEqual(sens.OFFICIAL, {"c2_high": 0.75, "c2_low": 0.50, "c6_min2": 5, "c6_min1": 3})
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=7, c2_valid_refs=6)), 2)
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=7, c2_valid_refs=5)), 1)   # 75% de 7 = 6 (para cima)
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=8, c2_valid_refs=6)), 2)
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=7, c2_valid_refs=6, c2_rest_declared=0)), 1)
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=7, c2_valid_refs=4)), 1)
+        self.assertEqual(sens.c2_score(self.inp(n_requirements=7, c2_valid_refs=3)), 0)
+        self.assertEqual(sens.c6_score(self.inp()), 2)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=3, c6_minor=1)), 1)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=2)), 0)
+        self.assertEqual(sens.c6_score(self.inp(c6_material=1)), 0)
+        self.assertEqual(sens.c6_score(self.inp(c6_minor=2)), 0)
+
+    def test_variants_are_the_prespecified_ones(self):
+        from protocol import sensitivity as sens
+        self.assertEqual(set(sens.VARIANTS), {"oficial", "c2_high_70", "c2_high_80", "c2_low_40", "c2_low_60",
+                                              "c6_min2_4", "c6_min2_6", "c6_min1_2", "c6_min1_4"})
+
+    def test_alternative_cuts_change_scores(self):
+        from protocol import sensitivity as sens
+        i = self.inp(n_requirements=7, c2_valid_refs=5)  # 71%: nota 1 a 75%, nota 2 a 70%
+        self.assertEqual(sens.c2_score(i, c2_high=0.75), 1)
+        self.assertEqual(sens.c2_score(i, c2_high=0.70), 2)
+        self.assertEqual(sens.c2_score(i, c2_high=0.80), 1)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=4)), 1)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=4), c6_min2=4), 2)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=5), c6_min2=6), 1)
+        self.assertEqual(sens.c6_score(self.inp(c6_claims=2), c6_min1=2), 1)
+
+    def _recs(self):
+        out = {}
+        recs = []
+        for n, (cond, c2in, c6in) in enumerate((
+            ("controle", self.inp(c2_valid_refs=0, c2_rest_declared=0, c6_claims=0), None),
+            ("explicacao", self.inp(c2_valid_refs=5), None),
+        ), start=1):
+            r = good_record(run_id=f"R{n:02d}", condition=cond)
+            from protocol import sensitivity as sens
+            r["trace_tests"] = sens.c2_score(c2in)
+            r["fidelity"] = sens.c6_score(c2in)
+            r["auditability_total"] = sum(r[f] for f in records.SCORE_FIELDS)
+            recs.append(r)
+            out[r["run_id"]] = c2in
+        return recs, out
+
+    def test_report_does_not_touch_official_scores_and_flags_changes(self):
+        from protocol import sensitivity as sens
+        recs, inputs = self._recs()
+        before = copy.deepcopy(recs)
+        self.assertEqual(sens.consistency_errors(recs, inputs), [])
+        rep = sens.sensitivity_report(recs, inputs)
+        self.assertEqual(recs, before)
+        self.assertEqual(set(rep), set(sens.VARIANTS))
+        self.assertFalse(rep["oficial"]["conclusion_changes"])
+        self.assertTrue(rep["oficial"]["h1_direction"])
+        self.assertIn("conclusion_changes", rep["c2_high_70"])
+
+    def test_consistency_detects_wrong_c2(self):
+        from protocol import sensitivity as sens
+        recs, inputs = self._recs()
+        recs[1]["trace_tests"] = 0
+        recs[1]["auditability_total"] = sum(recs[1][f] for f in records.SCORE_FIELDS)
+        self.assertTrue(any("C2 registrada" in e for e in sens.consistency_errors(recs, inputs)))
+        self.assertTrue(any("sem sensitivity_inputs" in e for e in sens.consistency_errors(recs, {})))
+
+    def test_check_inputs(self):
+        from protocol import sensitivity as sens
+        self.assertEqual(sens.check_inputs(self.inp()), [])
+        self.assertTrue(sens.check_inputs(self.inp(c2_valid_refs=8)))
+        self.assertTrue(sens.check_inputs(self.inp(c6_claims=11)))
+        self.assertTrue(sens.check_inputs(self.inp(c2_rest_declared=2)))
+        self.assertTrue(sens.check_inputs({}))
+
+    def test_sensitivity_is_frozen_and_scoring_file_declared(self):
+        self.assertIn("sensitivity.py", freeze_mod.FROZEN_FILES)
+        self.assertIn("sensitivity_inputs.json", records.SCORING_RUN_FILES)
+
+
+class AuthorDecisionsTests(unittest.TestCase):
+    """Q08, Q09, Q10, Q11, Q12.1 registrados no protocolo e no template."""
+
+    def setUp(self):
+        self.proto = (PROTOCOL_DIR / "PROTOCOL.md").read_text()
+        self.rubric = (PROTOCOL_DIR / "RUBRIC.md").read_text()
+        self.cfg = json.loads((PROTOCOL_DIR / "config" / "execution_config.template.json").read_text())
+
+    def test_q11_choices_in_template_and_agent_fields_still_null(self):
+        c = self.cfg["author_choices"]
+        self.assertEqual((c["model_name"], c["reasoning_effort"]), ("gpt-5.5", "medium"))
+        self.assertIsNone(self.cfg["model"]["name"])
+        self.assertIsNone(self.cfg["model"]["version_or_snapshot"])
+        self.assertIsNone(self.cfg["generation_parameters"]["reasoning_effort"])
+        for key in ("codex_version", "interface", "invocation_command", "flags", "sandbox_mode", "approval_policy"):
+            self.assertIsNone(self.cfg["agent"][key], key)
+
+    def test_q11_documented_without_inventing_snapshot(self):
+        self.assertIn("`gpt-5.5`", self.proto)
+        self.assertIn("`medium`", self.proto)
+        self.assertIn("author_choices", self.proto)
+        self.assertIn("sem execução", self.proto)
+        self.assertNotRegex(self.proto, r"gpt-5\.5-\d")
+
+    def test_freeze_rejects_divergence_from_author_choices(self):
+        cfg = copy.deepcopy(self.cfg)
+        cfg["model"]["name"] = "gpt-5.6-sol"
+        cfg["generation_parameters"]["reasoning_effort"] = "high"
+        problems = freeze_mod.check_author_choices(cfg)
+        self.assertEqual(len(problems), 2)
+        cfg["model"]["name"] = "gpt-5.5"
+        cfg["generation_parameters"]["reasoning_effort"] = "medium"
+        self.assertEqual(freeze_mod.check_author_choices(cfg), [])
+        self.assertEqual(freeze_mod.check_author_choices({"model": {"name": "x"}}), [])
+
+    def test_freeze_precondition_blocks_divergent_filled_config(self):
+        with tempfile.TemporaryDirectory() as d:
+            proto = Path(d) / "protocol"
+            shutil.copytree(PROTOCOL_DIR, proto, ignore=shutil.ignore_patterns("__pycache__", "tests", "FREEZE.json", "manifest.json", "execution_config.json"))
+            cfg = copy.deepcopy(self.cfg)
+
+            def fill(v, key=None):
+                if key == "interface":
+                    return "cli"
+                if key == "flags":
+                    return []
+                if v is None:
+                    return "x"
+                return {k: fill(x, k) for k, x in v.items()} if isinstance(v, dict) else v
+            filled = fill(cfg)  # model.name = "x": diverge de gpt-5.5
+            (proto / "config" / "execution_config.json").write_text(json.dumps(filled))
+            ref = Path(d) / "rev.md"
+            ref.write_text("ok")
+            self.assertTrue(any("author_choices" in p for p in freeze_mod.check_preconditions(proto, ref, True)))
+            self.assertFalse((proto / "FREEZE.json").exists())
+
+    def test_real_dir_has_no_frozen_artifacts(self):
+        for name in ("FREEZE.json", "manifest.json"):
+            self.assertFalse((PROTOCOL_DIR / name).exists(), name)
+        self.assertFalse((PROTOCOL_DIR / "config" / "execution_config.json").exists())
+
+    def test_q12_1_threshold_list_with_exact_wording(self):
+        self.assertIn("## 23.", self.proto)
+        self.assertIn("não foi localizado apoio nas fontes inspecionadas", self.proto)
+        self.assertIn("não foi localizado apoio nas fontes inspecionadas", self.rubric)
+        self.assertNotIn("sem respaldo na literatura", self.proto)
+        self.assertNotIn("sem respaldo na literatura", self.rubric)
+        for tag in ["L%d" % i for i in range(1, 15)]:
+            self.assertIn(f"| {tag} |", self.proto)
+        self.assertIn("plano de busca", self.proto)
+        self.assertIn("não foi executado", self.proto)
+
+    def test_q12_1_principle_support_has_locators_and_pending_citation(self):
+        for needle in ("Baltes et al. (2025, seção 5.5, p. 36 e 38–39)", "EMA/CHMP (2005, seção 1, p. 3; seção 2, p. 4–5)",
+                       "Laenen et al. (2006", "Bjarnason, Silva e Monperrus (2026", "Krippendorff (2018)"):
+            self.assertIn(needle, self.proto)
+        self.assertRegex(self.proto, r"\[CITAÇÃO NECESSÁRIA\][^\n]*Krippendorff|Krippendorff[^\n]*\[CITAÇÃO NECESSÁRIA\]")
+        self.assertIn("[CITAÇÃO NECESSÁRIA]", self.rubric)
+
+    def test_q12_1_sensitivity_prespecified_and_thresholds_unchanged(self):
+        for needle in ("70%", "80%", "sensitivity.py", "Não altera nenhuma nota oficial", "sensitivity_inputs.json"):
+            self.assertIn(needle, self.proto)
+        self.assertIn("0,10", self.proto)
+        self.assertIn("Pelo menos 75% dos requisitos", self.rubric)
+        self.assertIn("Pelo menos 5 alegações verificáveis", self.rubric)
+        self.assertEqual(manifest.TIMEOUT_S, 720)
+
+    def test_q10_single_rater_limitation_declared(self):
+        self.assertIn("Avaliador único (Q10=A)", self.proto)
+        lim = self.proto.split("## 14.")[1].split("## 15.")[0]
+        self.assertIn("avaliador único", lim)
+        self.assertIn("sem avaliador externo", lim)
+        self.assertIn("cegamento parcial", lim)
+
+    def test_q08_and_q09_notes_in_protocol(self):
+        sec20 = self.proto.split("## 20.")[1].split("## 21.")[0]
+        for needle in ("f934ab8", "declaração do autor; método não detalhado", "será escrito por ele",
+                       "URL do repositório experimental será citada", "agentes de IA", "AI-REVIEW-LOG.csv"):
+            self.assertIn(needle, sec20)
+        sec24 = self.proto.split("## 24.")[1]
+        for needle in ("versão 8 do arXiv", "10.48550/arXiv.2508.15503", "antes da entrega final"):
+            self.assertIn(needle, sec24)
+
+    def test_ai_review_log_header_is_unchanged(self):
+        h = (PROTOCOL_DIR / "schema" / "ai_review_log_header.csv").read_text().strip().split(",")
+        self.assertEqual(tuple(h), records.AI_REVIEW_FIELDS)
 
 
 if __name__ == "__main__":
