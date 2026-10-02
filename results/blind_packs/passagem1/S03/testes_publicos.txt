@@ -1,0 +1,20 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_conflicting_key_does_not_change_state (tests.test_public.PublicInventoryTests.test_conflicting_key_does_not_change_state) ... ok
+test_constructor_validates_and_copies_stock (tests.test_public.PublicInventoryTests.test_constructor_validates_and_copies_stock) ... ok
+test_insufficient_reservation_is_atomic (tests.test_public.PublicInventoryTests.test_insufficient_reservation_is_atomic) ... ok
+test_invalid_repeated_key_is_validated_before_idempotency (tests.test_public.PublicInventoryTests.test_invalid_repeated_key_is_validated_before_idempotency) ... ok
+test_r1_unknown_sku (tests.test_public.PublicInventoryTests.test_r1_unknown_sku) ... ok
+test_r2_insufficient_stock_raises (tests.test_public.PublicInventoryTests.test_r2_insufficient_stock_raises) ... ok
+test_r3_reserve_deducts_and_returns (tests.test_public.PublicInventoryTests.test_r3_reserve_deducts_and_returns) ... ok
+test_r4_idempotent_replay (tests.test_public.PublicInventoryTests.test_r4_idempotent_replay) ... ok
+test_r6_event_recorded (tests.test_public.PublicInventoryTests.test_r6_event_recorded) ... ok
+test_reservation_normalizes_key_and_items_are_order_independent (tests.test_public.PublicInventoryTests.test_reservation_normalizes_key_and_items_are_order_independent) ... ok
+test_returned_data_and_input_items_are_isolated (tests.test_public.PublicInventoryTests.test_returned_data_and_input_items_are_isolated) ... ok
+test_validation_rejects_invalid_values_and_unknown_available (tests.test_public.PublicInventoryTests.test_validation_rejects_invalid_values_and_unknown_available) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in <t>s
+
+OK

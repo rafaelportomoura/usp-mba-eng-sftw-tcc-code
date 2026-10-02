@@ -1,0 +1,100 @@
+--- a/shipping.py
++++ b/shipping.py
+@@ -1,12 +1,39 @@
+-"""Cálculo de frete (baseline com defeitos)."""
++"""Cálculo de frete."""
++
++import math
+ 
+ 
+ def calculate_shipping(weight_kg, destination, subtotal_cents, express=False):
+-    base = {"local": 850, "regional": 1550}.get(destination, 2490)
+-    extra = int(weight_kg) - 1 if weight_kg > 1 else 0
+-    fee = base + extra * 200
+-    if subtotal_cents > 20000:
+-        fee = 0
++    if (
++        isinstance(weight_kg, bool)
++        or not isinstance(weight_kg, (int, float))
++        or weight_kg <= 0
++        or weight_kg > 30
++        or not math.isfinite(weight_kg)
++    ):
++        raise ValueError("weight_kg must be finite and between 0 and 30")
++
++    if not isinstance(destination, str):
++        raise ValueError("invalid destination")
++    destination = destination.strip().lower()
++    if destination not in {"local", "regional", "national"}:
++        raise ValueError("invalid destination")
++
++    if (
++        isinstance(subtotal_cents, bool)
++        or not isinstance(subtotal_cents, int)
++        or subtotal_cents < 0
++        or not isinstance(express, bool)
++    ):
++        raise ValueError("invalid subtotal or express flag")
++
++    base = {"local": 850, "regional": 1550, "national": 2490}[destination]
++    standard_fee = base + (math.ceil(weight_kg) - 1) * 200
++    express_fee = 0
+     if express:
+-        fee += fee * 25 // 100
+-    return fee
++        # Round 25% to the nearest cent, with exact halves rounded upward.
++        express_fee = max(1000, (standard_fee * 25 + 50) // 100)
++
++    if subtotal_cents >= 20000:
++        standard_fee = 0
++    return standard_fee + express_fee
+--- a/tests/test_public.py
++++ b/tests/test_public.py
+@@ -14,12 +14,47 @@
+     def test_r5_free_above_threshold(self):
+         self.assertEqual(calculate_shipping(1, "national", 30000), 0)
+ 
++    def test_r5_threshold_is_inclusive(self):
++        self.assertEqual(calculate_shipping(1, "national", 20000), 0)
++
+     def test_r2_invalid_destination(self):
+         with self.assertRaises(ValueError):
+             calculate_shipping(1, "mars", 5000)
+ 
++    def test_r2_destination_is_normalized(self):
++        self.assertEqual(calculate_shipping(1, "  ReGiOnAl ", 5000), 1550)
++
++    def test_r1_started_kg_uses_ceiling(self):
++        self.assertEqual(calculate_shipping(1.01, "local", 5000), 1050)
++
++    def test_r1_invalid_weight(self):
++        for weight in (True, False, 0, -1, 30.1, float("inf"), float("nan"), "1"):
++            with self.subTest(weight=weight):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(weight, "local", 5000)
++
++    def test_r3_invalid_values(self):
++        for subtotal in (True, -1, 1.5, "5000"):
++            with self.subTest(subtotal=subtotal):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(1, "local", subtotal)
++        for express in (1, 0, "yes", None):
++            with self.subTest(express=express):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(1, "local", 5000, express)
++
++    def test_r1_upper_bound_is_valid(self):
++        self.assertEqual(calculate_shipping(30, "national", 0), 2490 + 29 * 200)
++
+     def test_r6_express_minimum(self):
+         self.assertEqual(calculate_shipping(1, "local", 5000, express=True), 850 + 1000)
++
++    def test_r6_express_is_due_when_standard_is_free(self):
++        self.assertEqual(calculate_shipping(1, "local", 20000, express=True), 1000)
++
++    def test_r6_express_rounds_half_up(self):
++        # 25% de 7290 = 1822.5, que deve arredondar para 1823.
++        self.assertEqual(calculate_shipping(25, "national", 0, express=True), 7290 + 1823)
+ 
+ 
+ if __name__ == "__main__":

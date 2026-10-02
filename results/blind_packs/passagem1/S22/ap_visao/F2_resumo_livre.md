@@ -1,0 +1,3 @@
+- Implementei validação completa, atomicidade, idempotência e conflitos em [inventory.py](<WORKSPACE>/inventory.py).
+- Adicionei cópias defensivas para estoque, itens e eventos.
+- Ampliei [tests/test_public.py](<WORKSPACE>/tests/test_public.py) para cobrir os requisitos.

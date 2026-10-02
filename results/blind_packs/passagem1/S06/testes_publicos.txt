@@ -1,0 +1,16 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_coupon_is_normalized_and_fixed_coupon_is_capped (tests.test_public.PublicPricingTests.test_coupon_is_normalized_and_fixed_coupon_is_capped) ... ok
+test_discounts_are_sequential_and_taxable (tests.test_public.PublicPricingTests.test_discounts_are_sequential_and_taxable) ... ok
+test_inputs_are_not_mutated (tests.test_public.PublicPricingTests.test_inputs_are_not_mutated) ... ok
+test_r2_r5_plain_order (tests.test_public.PublicPricingTests.test_r2_r5_plain_order) ... ok
+test_r3_vip_discount (tests.test_public.PublicPricingTests.test_r3_vip_discount) ... ok
+test_r4_save10_discount_amount (tests.test_public.PublicPricingTests.test_r4_save10_discount_amount) ... ok
+test_r8_result_keys (tests.test_public.PublicPricingTests.test_r8_result_keys) ... ok
+test_validation_rejects_invalid_values (tests.test_public.PublicPricingTests.test_validation_rejects_invalid_values) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in <t>s
+
+OK

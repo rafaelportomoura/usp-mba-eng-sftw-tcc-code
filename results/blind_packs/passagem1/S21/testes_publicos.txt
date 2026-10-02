@@ -1,0 +1,19 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_express_is_based_on_pre_free_shipping_fee (tests.test_public.PublicShippingTests.test_express_is_based_on_pre_free_shipping_fee) ... ok
+test_express_rounds_half_up (tests.test_public.PublicShippingTests.test_express_rounds_half_up) ... ok
+test_free_shipping_threshold_is_inclusive (tests.test_public.PublicShippingTests.test_free_shipping_threshold_is_inclusive) ... ok
+test_invalid_inputs (tests.test_public.PublicShippingTests.test_invalid_inputs) ... ok
+test_normalizes_destination (tests.test_public.PublicShippingTests.test_normalizes_destination) ... ok
+test_r2_invalid_destination (tests.test_public.PublicShippingTests.test_r2_invalid_destination) ... ok
+test_r4_local_one_kg (tests.test_public.PublicShippingTests.test_r4_local_one_kg) ... ok
+test_r4_regional_started_kg (tests.test_public.PublicShippingTests.test_r4_regional_started_kg) ... ok
+test_r5_free_above_threshold (tests.test_public.PublicShippingTests.test_r5_free_above_threshold) ... ok
+test_r6_express_minimum (tests.test_public.PublicShippingTests.test_r6_express_minimum) ... ok
+test_weight_uses_started_kilos (tests.test_public.PublicShippingTests.test_weight_uses_started_kilos) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in <t>s
+
+OK

@@ -1,0 +1,4 @@
+- Corrigido [`shipping.py`](<WORKSPACE>/shipping.py).
+- Adicionadas validações completas para peso, destino, subtotal e `express`.
+- Implementados cálculo por quilograma iniciado, gratuidade, taxa expressa com arredondamento meio para cima e mínimo.
+- Ampliados os testes em [`tests/test_public.py`](<WORKSPACE>/tests/test_public.py).

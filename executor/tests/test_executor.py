@@ -29,6 +29,12 @@ class Base(unittest.TestCase):
         self.scratch = self.tmp / "scratch"
         self.scratch.mkdir()
         self.record = self.tmp / "record.json"
+        # Isola o estado de congelamento do diretório real: os testes valem antes e depois do `freeze`.
+        self.noprotocol = self.tmp / "protocol_sem_freeze"
+        self.noprotocol.mkdir()
+        patcher = mock.patch.object(run_mod, "PROTOCOL_DIR", self.noprotocol)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def stub(self, **cfg):
         return make_stub(self.tmp / "codex", record=str(self.record), **cfg)

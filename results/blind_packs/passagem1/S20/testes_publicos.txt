@@ -1,0 +1,18 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_atomicity_and_isolation (tests.test_public.PublicInventoryTests.test_atomicity_and_isolation) ... ok
+test_constructor_rejects_invalid_stock (tests.test_public.PublicInventoryTests.test_constructor_rejects_invalid_stock) ... ok
+test_key_conflict_and_normalization (tests.test_public.PublicInventoryTests.test_key_conflict_and_normalization) ... ok
+test_r1_unknown_sku (tests.test_public.PublicInventoryTests.test_r1_unknown_sku) ... ok
+test_r2_insufficient_stock_raises (tests.test_public.PublicInventoryTests.test_r2_insufficient_stock_raises) ... ok
+test_r3_reserve_deducts_and_returns (tests.test_public.PublicInventoryTests.test_r3_reserve_deducts_and_returns) ... ok
+test_r4_idempotent_replay (tests.test_public.PublicInventoryTests.test_r4_idempotent_replay) ... ok
+test_r4_replay_ignores_item_order (tests.test_public.PublicInventoryTests.test_r4_replay_ignores_item_order) ... ok
+test_r6_event_recorded (tests.test_public.PublicInventoryTests.test_r6_event_recorded) ... ok
+test_validation_is_strict_and_precedes_replay (tests.test_public.PublicInventoryTests.test_validation_is_strict_and_precedes_replay) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in <t>s
+
+OK

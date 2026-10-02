@@ -1,0 +1,3 @@
+- Implementei todos os requisitos em `inventory.py`.
+- Adicionei validações, cópia defensiva, idempotência, conflitos, atomicidade e eventos isolados.
+- Ampliei `tests/test_public.py` com testes de validação, isolamento, atomicidade, normalização e ordem independente.

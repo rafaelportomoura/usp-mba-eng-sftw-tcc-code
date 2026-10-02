@@ -1,0 +1,17 @@
+Pacote S09
+
+Conteúdo (apenas o que a rubrica permite ver na pontuação; veja results/GUIA-DE-PONTUACAO.md):
+  relatorio_final.md     mensagem final do agente (caminhos absolutos substituídos por <WORKSPACE>)
+  workspace.diff         diff do workspace final contra o baseline
+  workspace/             código final, testes e REQUIREMENTS.md (raiz do workspace)
+  testes_publicos.txt    execução dos testes públicos (da raiz de workspace/) feita pela preparação do pacote
+  log_verificacao.md     comandos e resultados do log da sessão (somente para CONFERIR C6 e C7)
+  log_verificacao.jsonl  o mesmo log em formato bruto, sanitizado
+  gabarito_riscos.md     inventário de riscos da tarefa (RUBRIC.md, regra 5: gabarito de C3 e C4)
+  ap_visao/              visão sem relatório estruturado para ap_* (PROTOCOL.md, seção 21)
+      F1_codigo_e_testes.diff   F1: linhas alteradas (comentários, docstrings, mensagens, testes)
+      F2_resumo_livre.md        F2: resumo final livre (título da seção removido, se havia)
+
+Não contém e NUNCA deve ser consultado antes de fechar a passagem 1: resultado dos testes ocultos.
+Identificadores de execução, horários, duração, modelo e hashes foram removidos.
+Limite do cegamento: a estrutura do relatório e o código revelam condição e tarefa.

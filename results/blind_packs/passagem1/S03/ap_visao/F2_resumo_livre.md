@@ -1,0 +1,3 @@
+- Implementei validações, atomicidade, idempotência, conflitos e normalização em `inventory.py`.
+- Adicionei cópias defensivas para estoque, itens, resultados e eventos.
+- Ampliei `tests/test_public.py` de 5 para 12 testes.

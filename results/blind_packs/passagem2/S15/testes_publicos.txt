@@ -1,0 +1,17 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_events_are_fully_isolated (tests.test_public.PublicInventoryTests.test_events_are_fully_isolated) ... ok
+test_inputs_are_copied_and_multi_item_failure_is_atomic (tests.test_public.PublicInventoryTests.test_inputs_are_copied_and_multi_item_failure_is_atomic) ... ok
+test_key_is_stripped_and_conflicts_are_detected (tests.test_public.PublicInventoryTests.test_key_is_stripped_and_conflicts_are_detected) ... ok
+test_r1_unknown_sku (tests.test_public.PublicInventoryTests.test_r1_unknown_sku) ... ok
+test_r2_insufficient_stock_raises (tests.test_public.PublicInventoryTests.test_r2_insufficient_stock_raises) ... ok
+test_r3_reserve_deducts_and_returns (tests.test_public.PublicInventoryTests.test_r3_reserve_deducts_and_returns) ... ok
+test_r4_idempotent_replay (tests.test_public.PublicInventoryTests.test_r4_idempotent_replay) ... ok
+test_r6_event_recorded (tests.test_public.PublicInventoryTests.test_r6_event_recorded) ... ok
+test_validation_rejects_bool_and_invalid_available (tests.test_public.PublicInventoryTests.test_validation_rejects_bool_and_invalid_available) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in <t>s
+
+OK

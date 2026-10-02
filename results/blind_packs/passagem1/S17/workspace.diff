@@ -1,0 +1,144 @@
+--- a/inventory.py
++++ b/inventory.py
+@@ -1,4 +1,4 @@
+-"""Reserva de estoque (baseline incompleto)."""
++"""Reserva de estoque."""
+ 
+ 
+ class InvalidRequestError(ValueError):
+@@ -15,18 +15,63 @@
+ 
+ class InventoryService:
+     def __init__(self, stock):
+-        self._stock = stock
+-        self.events = []
++        if not isinstance(stock, dict):
++            raise InvalidRequestError("stock must be a dict")
++        for sku, quantity in stock.items():
++            if not isinstance(sku, str) or not isinstance(quantity, int) or isinstance(quantity, bool):
++                raise InvalidRequestError("stock must contain str keys and non-negative int quantities")
++            if quantity < 0:
++                raise InvalidRequestError("stock quantities must be non-negative")
++        self._stock = dict(stock)
++        self._reservations = {}
++        self._events = []
++
++    @property
++    def events(self):
++        return [
++            {
++                "type": event["type"],
++                "reservation_key": event["reservation_key"],
++                "items": dict(event["items"]),
++            }
++            for event in self._events
++        ]
+ 
+     def available(self, sku):
+-        return self._stock.get(sku, 0)
++        if not isinstance(sku, str) or sku not in self._stock:
++            raise InvalidRequestError("unknown sku")
++        return self._stock[sku]
+ 
+     def reserve(self, reservation_key, items):
++        key = self._validate_request(reservation_key, items)
++        normalized_items = dict(items)
++        existing = self._reservations.get(key)
++        if existing is not None:
++            if existing != normalized_items:
++                raise KeyConflictError(key)
++            return {"reservation_key": key, "items": dict(existing), "replayed": True}
++
++        # Check all items before changing any stock, preserving atomicity.
++        for sku, qty in normalized_items.items():
++            if self._stock[sku] < qty:
++                raise InsufficientStockError(sku)
++        for sku, qty in normalized_items.items():
++            self._stock[sku] -= qty
++
++        self._reservations[key] = dict(normalized_items)
++        self._events.append(
++            {"type": "reservation_created", "reservation_key": key, "items": dict(normalized_items)}
++        )
++        return {"reservation_key": key, "items": dict(normalized_items), "replayed": False}
++
++    def _validate_request(self, reservation_key, items):
++        if not isinstance(reservation_key, str) or not reservation_key.strip():
++            raise InvalidRequestError("reservation_key must be a non-empty string")
++        if not isinstance(items, dict) or not items:
++            raise InvalidRequestError("items must be a non-empty dict")
+         for sku, qty in items.items():
+-            if self._stock.get(sku, 0) < qty:
+-                raise InsufficientStockError(sku)
+-            self._stock[sku] -= qty
+-        self.events.append(
+-            {"type": "reservation_created", "reservation_key": reservation_key, "items": items}
+-        )
+-        return {"reservation_key": reservation_key, "items": items, "replayed": False}
++            if not isinstance(sku, str) or sku not in self._stock:
++                raise InvalidRequestError("unknown sku")
++            if not isinstance(qty, int) or isinstance(qty, bool) or qty <= 0:
++                raise InvalidRequestError("quantities must be positive ints")
++        return reservation_key.strip()
+--- a/tests/test_public.py
++++ b/tests/test_public.py
+@@ -4,6 +4,7 @@
+     InsufficientStockError,
+     InvalidRequestError,
+     InventoryService,
++    KeyConflictError,
+ )
+ 
+ 
+@@ -38,6 +39,51 @@
+             [{"type": "reservation_created", "reservation_key": "k1", "items": {"A": 1}}],
+         )
+ 
++    def test_key_is_stripped_and_conflicts_are_detected(self):
++        self.service.reserve(" k1 ", {"A": 1})
++        replay = self.service.reserve("k1", {"A": 1})
++        self.assertEqual(replay["reservation_key"], "k1")
++        self.assertTrue(replay["replayed"])
++        with self.assertRaises(KeyConflictError):
++            self.service.reserve(" k1", {"A": 2})
++        self.assertEqual(self.service.available("A"), 9)
++        self.assertEqual(len(self.service.events), 1)
++
++    def test_events_are_fully_isolated(self):
++        self.service.reserve("k1", {"A": 1})
++        events = self.service.events
++        events[0]["items"]["A"] = 99
++        events.append({"type": "fake"})
++        self.assertEqual(
++            self.service.events,
++            [{"type": "reservation_created", "reservation_key": "k1", "items": {"A": 1}}],
++        )
++
++    def test_inputs_are_copied_and_multi_item_failure_is_atomic(self):
++        stock = {"A": 3, "B": 2}
++        service = InventoryService(stock)
++        items = {"A": 1}
++        service.reserve("k1", items)
++        stock["A"] = 99
++        items["A"] = 99
++        self.assertEqual(service.available("A"), 2)
++        with self.assertRaises(InsufficientStockError):
++            service.reserve("k2", {"A": 2, "B": 3})
++        self.assertEqual(service.available("A"), 2)
++        self.assertEqual(service.available("B"), 2)
++        self.assertEqual(service.events, [{"type": "reservation_created", "reservation_key": "k1", "items": {"A": 1}}])
++
++    def test_validation_rejects_bool_and_invalid_available(self):
++        with self.assertRaises(InvalidRequestError):
++            InventoryService({"A": True})
++        for bad_items in ({}, [], {"A": True}, {"A": 0}, {"Z": 1}):
++            with self.subTest(bad_items=bad_items):
++                with self.assertRaises(InvalidRequestError):
++                    self.service.reserve("k1", bad_items)
++        for sku in ("Z", 1):
++            with self.assertRaises(InvalidRequestError):
++                self.service.available(sku)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

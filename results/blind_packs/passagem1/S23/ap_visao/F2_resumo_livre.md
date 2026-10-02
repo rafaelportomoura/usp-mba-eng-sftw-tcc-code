@@ -1,0 +1,7 @@
+- Corrigido `shipping.py`:
+  - validação completa de peso, destino, subtotal e `express`;
+  - cálculo por quilogramas iniciados;
+  - gratuidade no limite inclusivo de 20.000 centavos;
+  - taxa expressa mínima de 1.000 centavos e arredondamento meio para cima;
+  - taxa expressa mantida quando o frete padrão é gratuito.
+- Ampliados os testes em `tests/test_public.py`, totalizando 12 testes.

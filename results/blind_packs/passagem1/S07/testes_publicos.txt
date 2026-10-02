@@ -1,0 +1,18 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_r1_rejects_invalid_coupon (tests.test_public.PublicPricingTests.test_r1_rejects_invalid_coupon) ... ok
+test_r1_rejects_invalid_values (tests.test_public.PublicPricingTests.test_r1_rejects_invalid_values) ... ok
+test_r2_r5_plain_order (tests.test_public.PublicPricingTests.test_r2_r5_plain_order) ... ok
+test_r3_and_r4_are_applied_in_order (tests.test_public.PublicPricingTests.test_r3_and_r4_are_applied_in_order) ... ok
+test_r3_vip_discount (tests.test_public.PublicPricingTests.test_r3_vip_discount) ... ok
+test_r4_coupon_is_normalized_and_fixed_is_capped (tests.test_public.PublicPricingTests.test_r4_coupon_is_normalized_and_fixed_is_capped) ... ok
+test_r4_save10_discount_amount (tests.test_public.PublicPricingTests.test_r4_save10_discount_amount) ... ok
+test_r6_rounds_each_percentage_half_up (tests.test_public.PublicPricingTests.test_r6_rounds_each_percentage_half_up) ... ok
+test_r7_does_not_mutate_inputs (tests.test_public.PublicPricingTests.test_r7_does_not_mutate_inputs) ... ok
+test_r8_result_keys (tests.test_public.PublicPricingTests.test_r8_result_keys) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in <t>s
+
+OK

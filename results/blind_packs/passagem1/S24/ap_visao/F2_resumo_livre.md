@@ -1,0 +1,4 @@
+- Refatorado `pricing.py` em funções de validação, cálculo de subtotal e arredondamento.
+- Corrigidos descontos VIP, cupons, tributação e arredondamento sem ponto flutuante.
+- Garantida ausência de efeitos colaterais.
+- Ampliados os testes em `tests/test_public.py`.

@@ -1,0 +1,20 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_constructor_and_inputs_are_copied (tests.test_public.PublicInventoryTests.test_constructor_and_inputs_are_copied) ... ok
+test_constructor_rejects_invalid_stock (tests.test_public.PublicInventoryTests.test_constructor_rejects_invalid_stock) ... ok
+test_events_are_deep_copied (tests.test_public.PublicInventoryTests.test_events_are_deep_copied) ... ok
+test_insufficient_stock_is_atomic (tests.test_public.PublicInventoryTests.test_insufficient_stock_is_atomic) ... ok
+test_invalid_request_is_checked_before_existing_key (tests.test_public.PublicInventoryTests.test_invalid_request_is_checked_before_existing_key) ... ok
+test_normalized_key_and_conflict_do_not_change_state (tests.test_public.PublicInventoryTests.test_normalized_key_and_conflict_do_not_change_state) ... ok
+test_r1_unknown_sku (tests.test_public.PublicInventoryTests.test_r1_unknown_sku) ... ok
+test_r2_insufficient_stock_raises (tests.test_public.PublicInventoryTests.test_r2_insufficient_stock_raises) ... ok
+test_r3_reserve_deducts_and_returns (tests.test_public.PublicInventoryTests.test_r3_reserve_deducts_and_returns) ... ok
+test_r4_idempotent_replay (tests.test_public.PublicInventoryTests.test_r4_idempotent_replay) ... ok
+test_r6_event_recorded (tests.test_public.PublicInventoryTests.test_r6_event_recorded) ... ok
+test_validation_and_available_reject_invalid_values (tests.test_public.PublicInventoryTests.test_validation_and_available_reject_invalid_values) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in <t>s
+
+OK

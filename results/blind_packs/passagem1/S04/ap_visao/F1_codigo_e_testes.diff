@@ -1,0 +1,143 @@
+--- a/pricing.py
++++ b/pricing.py
+@@ -1,28 +1,66 @@
+-"""Cálculo de pedido (baseline monolítico com defeitos)."""
++"""Cálculo de preços de um pedido, usando apenas aritmética inteira."""
++
++
++def _is_int(value):
++    return isinstance(value, int) and not isinstance(value, bool)
++
++
++def _validate_items(items):
++    if not isinstance(items, (list, tuple)) or not items:
++        raise ValueError("items deve ser uma lista ou tupla não vazia")
++    for item in items:
++        if not isinstance(item, dict):
++            raise ValueError("cada item deve ser um dicionário")
++        if not isinstance(item.get("sku"), str) or not item["sku"]:
++            raise ValueError("sku deve ser uma string não vazia")
++        price = item.get("unit_price_cents")
++        quantity = item.get("quantity")
++        if not _is_int(price) or price < 0:
++            raise ValueError("unit_price_cents deve ser um inteiro não negativo")
++        if not _is_int(quantity) or quantity <= 0:
++            raise ValueError("quantity deve ser um inteiro positivo")
++
++
++def _validate_customer(customer):
++    if not isinstance(customer, dict):
++        raise ValueError("customer deve ser um dicionário")
++    if "vip" in customer and not isinstance(customer["vip"], bool):
++        raise ValueError("vip deve ser booleano")
++
++
++def _round_percent(amount, percent):
++    """Percentagem não negativa com arredondamento de meio para cima."""
++    return (amount * percent + 50) // 100
++
++
++def _coupon_discount(coupon, remaining):
++    if coupon is None:
++        return 0
++    if not isinstance(coupon, str):
++        raise ValueError("coupon deve ser uma string ou None")
++    normalized = coupon.strip().upper()
++    if normalized == "SAVE10":
++        return _round_percent(remaining, 10)
++    if normalized == "FIXED500":
++        return min(500, remaining)
++    raise ValueError("cupom desconhecido")
+ 
+ 
+ def calculate_order(items, customer, coupon=None):
+-    items.sort(key=lambda i: i["sku"])
+-    subtotal = 0
+-    for it in items:
+-        subtotal += it["unit_price_cents"] * it["quantity"]
+-    vip = 0
+-    if customer.get("vip"):
+-        vip = subtotal * 0.10
+-    rest = subtotal - vip
+-    disc = 0
+-    if coupon == "SAVE10":
+-        disc = rest * 0.10
+-    elif coupon == "FIXED500":
+-        disc = 500
+-    taxable = rest
+-    tax = taxable * 0.10
+-    total = taxable - disc + tax
++    """Calcula subtotal, descontos, imposto e total de um pedido."""
++    _validate_items(items)
++    _validate_customer(customer)
++    subtotal = sum(item["unit_price_cents"] * item["quantity"] for item in items)
++    vip_discount = _round_percent(subtotal, 10) if customer.get("vip", False) else 0
++    remaining = subtotal - vip_discount
++    coupon_discount = _coupon_discount(coupon, remaining)
++    taxable = remaining - coupon_discount
++    tax = _round_percent(taxable, 10)
+     return {
+-        "subtotal_cents": int(subtotal),
+-        "vip_discount_cents": int(round(vip)),
+-        "coupon_discount_cents": int(round(disc)),
+-        "taxable_cents": int(round(taxable)),
+-        "tax_cents": int(round(tax)),
+-        "total_cents": int(round(total)),
++        "subtotal_cents": subtotal,
++        "vip_discount_cents": vip_discount,
++        "coupon_discount_cents": coupon_discount,
++        "taxable_cents": taxable,
++        "tax_cents": tax,
++        "total_cents": taxable + tax,
+     }
+--- a/tests/test_public.py
++++ b/tests/test_public.py
+@@ -31,6 +31,48 @@
+         result = calculate_order([item("a", 10000, 1)], {}, "SAVE10")
+         self.assertEqual(result["coupon_discount_cents"], 1000)
+ 
++    def test_r1_rejects_invalid_inputs(self):
++        invalid_orders = [[], [item("", 100, 1)], [item("a", -1, 1)],
++                          [item("a", True, 1)], [item("a", 100, 0)],
++                          [item("a", 100, True)]]
++        for invalid_items in invalid_orders:
++            with self.subTest(items=invalid_items):
++                with self.assertRaises(ValueError):
++                    calculate_order(invalid_items, {})
++        with self.assertRaises(ValueError):
++            calculate_order([item("a", 100, 1)], [])
++        with self.assertRaises(ValueError):
++            calculate_order([item("a", 100, 1)], {"vip": 1})
++        with self.assertRaises(ValueError):
++            calculate_order([item("a", 100, 1)], {}, 10)
++
++    def test_r4_coupon_is_normalized_and_applied_after_vip(self):
++        result = calculate_order([item("a", 10000, 1)], {"vip": True}, " save10 ")
++        self.assertEqual(result["coupon_discount_cents"], 900)
++        self.assertEqual(result["taxable_cents"], 8100)
++
++    def test_r4_fixed_coupon_is_capped(self):
++        result = calculate_order([item("a", 100, 1)], {}, "FIXED500")
++        self.assertEqual(result["coupon_discount_cents"], 100)
++        self.assertEqual(result["taxable_cents"], 0)
++        with self.assertRaises(ValueError):
++            calculate_order([item("a", 100, 1)], {}, "NOPE")
++
++    def test_r6_rounds_each_percentage_without_floating_point(self):
++        result = calculate_order([item("a", 5, 1)], {"vip": True})
++        self.assertEqual(result["vip_discount_cents"], 1)
++        self.assertEqual(result["taxable_cents"], 4)
++        self.assertEqual(result["tax_cents"], 0)
++        self.assertEqual(calculate_order([item("a", 5, 1)], {})["tax_cents"], 1)
++
++    def test_r7_does_not_mutate_inputs(self):
++        items = [item("b", 500, 1), item("a", 1000, 2)]
++        original_items = [dict(value) for value in items]
++        customer = {"vip": True}
++        calculate_order(items, customer, "FIXED500")
++        self.assertEqual(items, original_items)
++        self.assertEqual(customer, {"vip": True})
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

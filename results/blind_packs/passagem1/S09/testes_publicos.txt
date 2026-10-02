@@ -1,0 +1,19 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_conflict_does_not_change_state (tests.test_public.PublicInventoryTests.test_conflict_does_not_change_state) ... ok
+test_constructor_validates_and_copies_stock (tests.test_public.PublicInventoryTests.test_constructor_validates_and_copies_stock) ... ok
+test_input_and_event_results_are_isolated (tests.test_public.PublicInventoryTests.test_input_and_event_results_are_isolated) ... ok
+test_insufficient_request_is_atomic (tests.test_public.PublicInventoryTests.test_insufficient_request_is_atomic) ... ok
+test_normalizes_keys_and_replays_regardless_of_item_order (tests.test_public.PublicInventoryTests.test_normalizes_keys_and_replays_regardless_of_item_order) ... ok
+test_r1_unknown_sku (tests.test_public.PublicInventoryTests.test_r1_unknown_sku) ... ok
+test_r2_insufficient_stock_raises (tests.test_public.PublicInventoryTests.test_r2_insufficient_stock_raises) ... ok
+test_r3_reserve_deducts_and_returns (tests.test_public.PublicInventoryTests.test_r3_reserve_deducts_and_returns) ... ok
+test_r4_idempotent_replay (tests.test_public.PublicInventoryTests.test_r4_idempotent_replay) ... ok
+test_r6_event_recorded (tests.test_public.PublicInventoryTests.test_r6_event_recorded) ... ok
+test_validation_rejects_bool_empty_and_unknown_values (tests.test_public.PublicInventoryTests.test_validation_rejects_bool_empty_and_unknown_values) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in <t>s
+
+OK

@@ -1,0 +1,20 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_r1_weight_upper_bound (tests.test_public.PublicShippingTests.test_r1_weight_upper_bound) ... ok
+test_r1_weight_validation (tests.test_public.PublicShippingTests.test_r1_weight_validation) ... ok
+test_r2_destination_is_normalized (tests.test_public.PublicShippingTests.test_r2_destination_is_normalized) ... ok
+test_r2_destination_validation (tests.test_public.PublicShippingTests.test_r2_destination_validation) ... ok
+test_r2_invalid_destination (tests.test_public.PublicShippingTests.test_r2_invalid_destination) ... ok
+test_r3_subtotal_and_express_validation (tests.test_public.PublicShippingTests.test_r3_subtotal_and_express_validation) ... ok
+test_r4_local_one_kg (tests.test_public.PublicShippingTests.test_r4_local_one_kg) ... ok
+test_r4_regional_started_kg (tests.test_public.PublicShippingTests.test_r4_regional_started_kg) ... ok
+test_r5_free_above_threshold (tests.test_public.PublicShippingTests.test_r5_free_above_threshold) ... ok
+test_r5_threshold_is_inclusive (tests.test_public.PublicShippingTests.test_r5_threshold_is_inclusive) ... ok
+test_r6_express_minimum (tests.test_public.PublicShippingTests.test_r6_express_minimum) ... ok
+test_r6_rounding_and_free_standard_shipping (tests.test_public.PublicShippingTests.test_r6_rounding_and_free_standard_shipping) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in <t>s
+
+OK

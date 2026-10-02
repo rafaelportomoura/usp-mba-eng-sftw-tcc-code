@@ -1,0 +1,2 @@
+- Corrigido `shipping.py` com validações, cálculo por kg iniciado, gratuidade, taxa expressa e arredondamento meio-para-cima.
+- Ampliado `tests/test_public.py` para cobrir os requisitos R1–R7.

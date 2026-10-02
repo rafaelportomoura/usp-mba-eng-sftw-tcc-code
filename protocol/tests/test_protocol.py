@@ -727,11 +727,12 @@ class FreezeTests(unittest.TestCase):
     def test_cli_freeze_without_flags_is_refused(self):
         from protocol import cli
         import contextlib
-        err = io.StringIO()
+        before = (PROTOCOL_DIR / "FREEZE.json").read_bytes() if (PROTOCOL_DIR / "FREEZE.json").exists() else None
         with contextlib.redirect_stdout(io.StringIO()):
             rc = cli.main(["freeze", "--dry-run"])
-        self.assertEqual(rc, 1)  # no diretório real faltam config/release; nada é gravado
-        self.assertFalse((PROTOCOL_DIR / "FREEZE.json").exists())
+        self.assertEqual(rc, 1)  # sem --release-ref/--confirm-oracles-released; nada é gravado
+        after = (PROTOCOL_DIR / "FREEZE.json").read_bytes() if (PROTOCOL_DIR / "FREEZE.json").exists() else None
+        self.assertEqual(before, after)
 
 
 class CliTests(unittest.TestCase):

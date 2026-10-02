@@ -1,0 +1,20 @@
+Comando (da raiz de workspace/): python -m unittest discover -s tests -t . -v
+Código de saída: 0
+
+test_r1_invalid_weights (tests.test_public.PublicShippingTests.test_r1_invalid_weights) ... ok
+test_r2_invalid_destination (tests.test_public.PublicShippingTests.test_r2_invalid_destination) ... ok
+test_r2_invalid_destination_types (tests.test_public.PublicShippingTests.test_r2_invalid_destination_types) ... ok
+test_r2_normalizes_destination (tests.test_public.PublicShippingTests.test_r2_normalizes_destination) ... ok
+test_r3_invalid_subtotal_and_express (tests.test_public.PublicShippingTests.test_r3_invalid_subtotal_and_express) ... ok
+test_r4_local_one_kg (tests.test_public.PublicShippingTests.test_r4_local_one_kg) ... ok
+test_r4_regional_started_kg (tests.test_public.PublicShippingTests.test_r4_regional_started_kg) ... ok
+test_r5_free_above_threshold (tests.test_public.PublicShippingTests.test_r5_free_above_threshold) ... ok
+test_r5_free_at_threshold (tests.test_public.PublicShippingTests.test_r5_free_at_threshold) ... ok
+test_r6_express_is_due_when_standard_shipping_is_free (tests.test_public.PublicShippingTests.test_r6_express_is_due_when_standard_shipping_is_free) ... ok
+test_r6_express_minimum (tests.test_public.PublicShippingTests.test_r6_express_minimum) ... ok
+test_r6_express_rounds_half_up (tests.test_public.PublicShippingTests.test_r6_express_rounds_half_up) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in <t>s
+
+OK

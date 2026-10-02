@@ -1,0 +1,185 @@
+{
+  "AVISO": "O avaliador NÃO deve abrir este arquivo antes de fechar a passagem 1 (e a passagem 2 para os pares).",
+  "protocol_version": "v1.0.0",
+  "manifest_seed": 20261002,
+  "blinding_seed": 20261003,
+  "method": "protocol.manifest.blind_plan(runs, seed): Random(seed + 1), Fisher-Yates sobre random(); S01..S24 sorteados em um só conjunto; passagem 2 = 1 execução por célula",
+  "pass1": [
+    {
+      "blind_id": "S07",
+      "run_id": "R17"
+    },
+    {
+      "blind_id": "S17",
+      "run_id": "R10"
+    },
+    {
+      "blind_id": "S18",
+      "run_id": "R08"
+    },
+    {
+      "blind_id": "S22",
+      "run_id": "R11"
+    },
+    {
+      "blind_id": "S01",
+      "run_id": "R01"
+    },
+    {
+      "blind_id": "S05",
+      "run_id": "R16"
+    },
+    {
+      "blind_id": "S19",
+      "run_id": "R15"
+    },
+    {
+      "blind_id": "S09",
+      "run_id": "R14"
+    },
+    {
+      "blind_id": "S11",
+      "run_id": "R09"
+    },
+    {
+      "blind_id": "S04",
+      "run_id": "R07"
+    },
+    {
+      "blind_id": "S03",
+      "run_id": "R04"
+    },
+    {
+      "blind_id": "S06",
+      "run_id": "R02"
+    },
+    {
+      "blind_id": "S24",
+      "run_id": "R03"
+    },
+    {
+      "blind_id": "S10",
+      "run_id": "R05"
+    },
+    {
+      "blind_id": "S20",
+      "run_id": "R18"
+    },
+    {
+      "blind_id": "S21",
+      "run_id": "R12"
+    },
+    {
+      "blind_id": "S13",
+      "run_id": "R06"
+    },
+    {
+      "blind_id": "S23",
+      "run_id": "R13"
+    }
+  ],
+  "pass2": [
+    {
+      "blind_id": "S16",
+      "run_id": "R03"
+    },
+    {
+      "blind_id": "S08",
+      "run_id": "R01"
+    },
+    {
+      "blind_id": "S14",
+      "run_id": "R11"
+    },
+    {
+      "blind_id": "S02",
+      "run_id": "R13"
+    },
+    {
+      "blind_id": "S12",
+      "run_id": "R08"
+    },
+    {
+      "blind_id": "S15",
+      "run_id": "R10"
+    }
+  ],
+  "key": {
+    "S07": "R17",
+    "S17": "R10",
+    "S18": "R08",
+    "S22": "R11",
+    "S01": "R01",
+    "S05": "R16",
+    "S19": "R15",
+    "S09": "R14",
+    "S11": "R09",
+    "S04": "R07",
+    "S03": "R04",
+    "S06": "R02",
+    "S24": "R03",
+    "S10": "R05",
+    "S20": "R18",
+    "S21": "R12",
+    "S13": "R06",
+    "S23": "R13",
+    "S16": "R03",
+    "S08": "R01",
+    "S14": "R11",
+    "S02": "R13",
+    "S12": "R08",
+    "S15": "R10"
+  },
+  "reevaluation_cells": {
+    "S16": [
+      "t2_order_pricing",
+      "explicacao"
+    ],
+    "S08": [
+      "t1_shipping",
+      "controle"
+    ],
+    "S14": [
+      "t3_inventory_reservation",
+      "explicacao"
+    ],
+    "S02": [
+      "t1_shipping",
+      "explicacao"
+    ],
+    "S12": [
+      "t2_order_pricing",
+      "controle"
+    ],
+    "S15": [
+      "t3_inventory_reservation",
+      "controle"
+    ]
+  },
+  "pack_sha256": {
+    "passagem1/S07": "8ad5b4a8f46dafb373fac81afdc1d0054d340627b94cead1d5a60398ca86fc1b",
+    "passagem1/S17": "1a8ecfa6df7548f31c20f4c08e9ab7268f2c50ca88fac09a10247091f4cb6e62",
+    "passagem1/S18": "671b323eab4af56b621cfcef04219bc51e072e33bb7596bc0cfc4cbea18e499b",
+    "passagem1/S22": "d171309d8091d0ef62410b27b54b95fa54e695f190bfe8338740303b8a2e0b45",
+    "passagem1/S01": "06feb814f42c8d2d5ee3d67264d33865a9673fe5f0701e8c1f0c0f2443ce62d1",
+    "passagem1/S05": "92d80709f4e73c5d6d391ec86c8bb9705f76a725f76586bc09b8cb5d666362ff",
+    "passagem1/S19": "0b516b7c415850c1f3c738da28f85fc589df2591e78dddc99a7c5aaa8bc4bc7e",
+    "passagem1/S09": "3a3038134b83af7a34dac87816cba351495f3337d7150abb525442496c0637c7",
+    "passagem1/S11": "1aad5a1e9dd7bdf2cfe1cac3960538628f7d7e1d71528b4fac6f135c99487990",
+    "passagem1/S04": "4c5a06012b8d687253d43944091bfbd4ca5ac89f63118424932033b5d0d6127f",
+    "passagem1/S03": "b14cded8c86139b68fe39f951942350b7910f07bf18dc00eccd3ecdab552c83a",
+    "passagem1/S06": "8d65bac83468ed08e7039682d43cdc856bdc4b2ed3c65f64c2d82dfd240f7d5e",
+    "passagem1/S24": "ef67586bff2a8b46cd91162c2e434bb1a71dbb6830e9c60872756538bc632918",
+    "passagem1/S10": "9cfe83b8ffa09438a836d4a86479ba3ef85b1419a659205f484a4039a651eff7",
+    "passagem1/S20": "836d34142230af333367fcbbc7bf8acfe332924e537b7e9cd19ff92fd07033d3",
+    "passagem1/S21": "31cdd2c110663a293c603ab089392d5d686085e3157f1876bf0ce798acf3f4e7",
+    "passagem1/S13": "016b1cbaa29fa5df6f069f4d7bae311d5f39a3c580c325b81568898e10cdf445",
+    "passagem1/S23": "fbfbbf91a11b8e77df3d55ce34afd72cc74d973d1406f3aa014427d971f51f3e",
+    "passagem2/S16": "4fba17f2122522020a9d2d7c068962c4e6f119ba8c487a5fdffa57a179dac462",
+    "passagem2/S08": "caa6ab8e1b62f1c0ba3ff1dae199ef67c241a2d010697a7ee74639c85e99400d",
+    "passagem2/S14": "7fb24150b5af09b5579158e38423ea7a94066993ab80341d1e61e94689366ad9",
+    "passagem2/S02": "4c206fdd7948e940755563faf3c53a6553d32177f903c6e5d7580b8b9fb23507",
+    "passagem2/S12": "51d6d6bdcb590b8b7385164d06303f4a55eb981e48c191171a5b84b4041c7b5d",
+    "passagem2/S15": "0c31da5fee11d380b80f3059082cf45cfc0052c6f23fcfdd3edb48f3d47156e6"
+  }
+}
