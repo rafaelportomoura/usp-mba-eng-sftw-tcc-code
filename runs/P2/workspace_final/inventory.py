@@ -1,0 +1,79 @@
+"""Serviço de reserva de estoque."""
+
+
+class InvalidRequestError(ValueError):
+    pass
+
+
+class InsufficientStockError(Exception):
+    pass
+
+
+class KeyConflictError(Exception):
+    pass
+
+
+class InventoryService:
+    def __init__(self, stock):
+        if not isinstance(stock, dict):
+            raise InvalidRequestError("stock must be a dict")
+        for sku, quantity in stock.items():
+            if not isinstance(sku, str) or not self._is_int(quantity) or quantity < 0:
+                raise InvalidRequestError("invalid stock")
+        self._stock = dict(stock)
+        self._reservations = {}
+        self._event_log = []
+
+    @staticmethod
+    def _is_int(value):
+        return isinstance(value, int) and not isinstance(value, bool)
+
+    @property
+    def events(self):
+        return [
+            {
+                "type": event["type"],
+                "reservation_key": event["reservation_key"],
+                "items": dict(event["items"]),
+            }
+            for event in self._event_log
+        ]
+
+    def available(self, sku):
+        if not isinstance(sku, str) or sku not in self._stock:
+            raise InvalidRequestError("unknown sku")
+        return self._stock[sku]
+
+    def reserve(self, reservation_key, items):
+        # A validação ocorre antes de consultar reservas anteriores.
+        if not isinstance(reservation_key, str) or not reservation_key.strip():
+            raise InvalidRequestError("invalid reservation key")
+        if not isinstance(items, dict) or not items:
+            raise InvalidRequestError("items must be a non-empty dict")
+
+        key = reservation_key.strip()
+        for sku, quantity in items.items():
+            if not isinstance(sku, str) or sku not in self._stock:
+                raise InvalidRequestError("unknown sku")
+            if not self._is_int(quantity) or quantity <= 0:
+                raise InvalidRequestError("invalid quantity")
+
+        normalized_items = dict(items)
+        previous = self._reservations.get(key)
+        if previous is not None:
+            if previous != normalized_items:
+                raise KeyConflictError(key)
+            return {"reservation_key": key, "items": dict(previous), "replayed": True}
+
+        # Verifica tudo antes de alterar qualquer item do estoque.
+        for sku, quantity in normalized_items.items():
+            if self._stock[sku] < quantity:
+                raise InsufficientStockError(sku)
+        for sku, quantity in normalized_items.items():
+            self._stock[sku] -= quantity
+
+        self._reservations[key] = dict(normalized_items)
+        self._event_log.append(
+            {"type": "reservation_created", "reservation_key": key, "items": dict(normalized_items)}
+        )
+        return {"reservation_key": key, "items": dict(normalized_items), "replayed": False}

@@ -9,53 +9,65 @@
   },
   "model": {
     "role": "agente gerador de codigo, unico LLM do estudo, sem papel de avaliador",
-    "name": null,
-    "version_or_snapshot": null,
-    "provider": null,
-    "fingerprint_or_checksum": null
+    "name": "gpt-5.6-luna",
+    "version_or_snapshot": "gpt-5.6-luna (identificador reportado pelo Codex nos eventos de sessão; snapshot separado não exposto)",
+    "provider": "OpenAI, via backend do Codex (chatgpt.com/backend-api/codex, observado na mensagem de erro dos pilotos excluídos)",
+    "fingerprint_or_checksum": "nao_exposto"
   },
   "agent": {
     "tool": "Codex",
-    "codex_version": null,
-    "interface": null,
+    "codex_version": "0.154.0",
+    "interface": "cli",
     "interface_note": "interface usada: 'cli' ou 'api'; a diferenca de superficie (CLI, API) deve ser descrita no metodo do TCC",
-    "invocation_command": null,
-    "flags": null,
-    "sandbox_mode": null,
-    "approval_policy": null,
-    "tools_enabled": null,
+    "invocation_command": "codex exec --json --output-last-message <last_message_file> --sandbox workspace-write --cd <workspace> --model <model.name> -c model_reasoning_effort=<reasoning_effort> --ignore-user-config --ignore-rules --skip-git-repo-check --color never - (prompt via stdin; CODEX_HOME descartavel)",
+    "flags": [
+      "--json",
+      "--output-last-message <last_message_file>",
+      "--sandbox workspace-write",
+      "--cd <workspace>",
+      "--model <model.name>",
+      "-c model_reasoning_effort=<generation_parameters.reasoning_effort>",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--skip-git-repo-check",
+      "--color never",
+      "- (prompt via stdin)"
+    ],
+    "sandbox_mode": "workspace-write",
+    "approval_policy": "never",
+    "tools_enabled": "ferramentas padrão do Codex 0.154.0 (execução de comandos de shell e edição de arquivos observadas nos eventos); lista completa não exposta",
     "agent_config_files": [],
-    "agent_config_hash": null,
+    "agent_config_hash": "nenhum arquivo de configuração de usuário carregado (--ignore-user-config, --ignore-rules)",
     "vendor_system_prompt": "nao acessivel ao pesquisador; registrar como limitacao"
   },
   "generation_parameters": {
-    "reasoning_effort": null,
-    "temperature": null,
-    "top_p": null,
-    "max_output_tokens": null,
-    "other_defaults_recorded": null
+    "reasoning_effort": "medium",
+    "temperature": "nao_exposto",
+    "top_p": "nao_exposto",
+    "max_output_tokens": "nao_exposto",
+    "other_defaults_recorded": "padrões do Codex 0.154.0 para o modelo; não inspecionados nem alterados"
   },
   "execution": {
     "session_policy": "uma sessao nova por execucao; sem memoria, historico ou conversa compartilhados",
     "timeout_s": 720,
     "human_intervention": "nenhuma durante a execucao",
     "workspace": "copia temporaria gerada por harness.cli prepare (baseline, REQUIREMENTS.md, tests/)",
-    "working_directory": null,
-    "network_policy": null,
-    "date_first_run": null,
-    "python_version": null,
-    "platform": null
+    "working_directory": "workspace temporário por execução em ~/.cache/tcc-scratch/<run_id>/workspace (gerado por harness.cli prepare)",
+    "network_policy": "network_access=false no sandbox workspace-write (observado em turn_context da sessão dos pilotos P1 e P2)",
+    "date_first_run": "2026-10-02",
+    "python_version": "3.14.7",
+    "platform": "Linux 7.2.5-3-omarchy x86_64"
   },
   "prompts": {
     "controle": {
       "path": "protocol/prompts/controle.md",
-      "sha256": null
+      "sha256": "d0a40b7a42cce93752db159f030f047dbf87dd136140860254c6a2d605ca69e8"
     },
     "explicacao": {
       "path": "protocol/prompts/explicacao.md",
-      "sha256": null
+      "sha256": "85691e2c70d3c279221195c8d758e2304b66168b88cb8efa40d81ddf666a98b1"
     },
-    "prompt_development_history": null
+    "prompt_development_history": "Prompts redigidos em rascunho por agente de IA e aprovados pelo autor; usados sem alteração nos pilotos P1 e P2 (2026-10-02, hashes iguais aos de prompt.txt). Nenhuma iteração posterior."
   },
   "logs": {
     "per_run_directory": "runs/<run_id>/",
@@ -68,7 +80,7 @@
       "evaluation.json",
       "run_meta.json"
     ],
-    "native_log_format_note": null,
+    "native_log_format_note": "agent_events.jsonl: eventos JSONL (thread.started, turn.started, item.started/item.completed com command_execution, file_change e agent_message, turn.completed, turn.failed, error), observados nos pilotos P1 e P2; formato não documentado pelo fornecedor",
     "exclusion_registry": "runs/exclusions.jsonl"
   },
   "executor_plan": {

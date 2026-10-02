@@ -51,7 +51,7 @@ Metadados (`prepare.json`, `evaluation.json`) ficam em `runs/<run_id>/`, fora do
 Executa `codex exec` (codex-cli 0.154.0, decisão Q02) por `run_id`, com `CODEX_HOME` e `HOME` descartáveis fora dos
 repositórios, `--ignore-user-config --ignore-rules`, sandbox `workspace-write`, timeout de 720 s com kill do grupo,
 captura completa em `runs/<run_id>/` e avaliação pelo harness. Modelo e esforço vêm só do `execution_config.json`
-(escolhidos pelo autor em Q11: `gpt-5.5`, esforço `medium`, em `author_choices` do template; snapshot e versão vêm da execução). Credenciais: `--auth-file` explícito, copiado para o `CODEX_HOME` e apagado; nunca versionadas.
+(escolhidos pelo autor em Q11: `gpt-5.6-luna`, esforço `medium`, em `author_choices` do template; snapshot e versão vêm da execução). Credenciais: `--auth-file` explícito, copiado para o `CODEX_HOME` e apagado; nunca versionadas.
 
 ```
 python3 -m unittest discover -s executor/tests -t .      # usa um `codex` falso; não consome cota

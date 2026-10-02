@@ -1,0 +1,11 @@
+{
+  "run_id": "P1",
+  "task_id": "t3_inventory_reservation",
+  "condition": "controle",
+  "finished": false,
+  "attempt_started_at": "2026-10-02T06:13:55+00:00",
+  "protocol_frozen": false,
+  "allow_unfrozen_used": true,
+  "executor_error": "ExecutorError: `codex --version` falhou (rc=1): '[WARN] migrate: error parsing config file: /home/rafaelportomoura/.config/mise/config.toml\\nmise ERROR error parsing config file: /home/rafaelportomoura/.config/mise/config.toml\\nmise ERROR Config files in /home/rafaelportomoura/.config/mise/config.toml are not trusted.\\nTrust them with `mise trust`. See https://mise.jdx.dev/cli/trust.html for more information.\\nmise ERROR Version: 2026.9.7 linux-x64 (2026-09-13)\\nmise ERROR Run with --verbose or MISE_VERBOSE=1 for more information'",
+  "exit_status": "unclassified_executor_error"
+}

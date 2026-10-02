@@ -7,3 +7,6 @@ auth.json
 .codex/
 codex_home/
 runs/*/codex_home*/
+runs/**/codex_home*/
+
+# Sessões do Codex (rollouts) contêm blobs criptografados de raciocínio interno: mantidas só localmente; o log auditável é agent_events.jsonl

@@ -682,7 +682,7 @@ class FreezeTests(unittest.TestCase):
         self.assertTrue(self._write_cfg(lambda c: c["agent"].__setitem__("flags", [""])))
         self.assertTrue(self._write_cfg(lambda c: c["agent"].__setitem__("codex_version", "nao_exposto")))
         self.assertTrue(self._write_cfg(lambda c: c["model"].__setitem__("name", "  ")))
-        self._write_cfg(lambda c: c["model"].__setitem__("name", "gpt-5.5"))
+        self._write_cfg(lambda c: c["model"].__setitem__("name", "gpt-5.6-luna"))
 
     def test_interface_must_be_cli_or_api(self):
         self.assertTrue(any("interface" in p for p in self._write_cfg(lambda c: c["agent"].__setitem__("interface", "web"))))
@@ -1006,7 +1006,7 @@ class AuthorDecisionsTests(unittest.TestCase):
 
     def test_q11_choices_in_template_and_agent_fields_still_null(self):
         c = self.cfg["author_choices"]
-        self.assertEqual((c["model_name"], c["reasoning_effort"]), ("gpt-5.5", "medium"))
+        self.assertEqual((c["model_name"], c["reasoning_effort"]), ("gpt-5.6-luna", "medium"))
         self.assertIsNone(self.cfg["model"]["name"])
         self.assertIsNone(self.cfg["model"]["version_or_snapshot"])
         self.assertIsNone(self.cfg["generation_parameters"]["reasoning_effort"])
@@ -1014,7 +1014,7 @@ class AuthorDecisionsTests(unittest.TestCase):
             self.assertIsNone(self.cfg["agent"][key], key)
 
     def test_q11_documented_without_inventing_snapshot(self):
-        self.assertIn("`gpt-5.5`", self.proto)
+        self.assertIn("`gpt-5.6-luna`", self.proto)
         self.assertIn("`medium`", self.proto)
         self.assertIn("author_choices", self.proto)
         self.assertIn("sem execução", self.proto)
@@ -1026,7 +1026,7 @@ class AuthorDecisionsTests(unittest.TestCase):
         cfg["generation_parameters"]["reasoning_effort"] = "high"
         problems = freeze_mod.check_author_choices(cfg)
         self.assertEqual(len(problems), 2)
-        cfg["model"]["name"] = "gpt-5.5"
+        cfg["model"]["name"] = "gpt-5.6-luna"
         cfg["generation_parameters"]["reasoning_effort"] = "medium"
         self.assertEqual(freeze_mod.check_author_choices(cfg), [])
         self.assertEqual(freeze_mod.check_author_choices({"model": {"name": "x"}}), [])
@@ -1045,17 +1045,19 @@ class AuthorDecisionsTests(unittest.TestCase):
                 if v is None:
                     return "x"
                 return {k: fill(x, k) for k, x in v.items()} if isinstance(v, dict) else v
-            filled = fill(cfg)  # model.name = "x": diverge de gpt-5.5
+            filled = fill(cfg)  # model.name = "x": diverge de gpt-5.6-luna
             (proto / "config" / "execution_config.json").write_text(json.dumps(filled))
             ref = Path(d) / "rev.md"
             ref.write_text("ok")
             self.assertTrue(any("author_choices" in p for p in freeze_mod.check_preconditions(proto, ref, True)))
             self.assertFalse((proto / "FREEZE.json").exists())
 
-    def test_real_dir_has_no_frozen_artifacts(self):
-        for name in ("FREEZE.json", "manifest.json"):
-            self.assertFalse((PROTOCOL_DIR / name).exists(), name)
-        self.assertFalse((PROTOCOL_DIR / "config" / "execution_config.json").exists())
+    def test_real_dir_freeze_state_is_consistent(self):
+        """Estado reverso do rascunho: ou não há congelamento, ou os dois artefatos existem."""
+        frozen = (PROTOCOL_DIR / "FREEZE.json").exists()
+        self.assertEqual(frozen, (PROTOCOL_DIR / "manifest.json").exists())
+        if frozen:
+            self.assertTrue((PROTOCOL_DIR / "config" / "execution_config.json").exists())
 
     def test_q12_1_threshold_list_with_exact_wording(self):
         self.assertIn("## 23.", self.proto)

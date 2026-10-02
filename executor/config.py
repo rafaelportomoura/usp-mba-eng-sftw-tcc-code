@@ -1,7 +1,7 @@
 """Parâmetros do executor, lidos de um execution_config.json explícito.
 
 Modelo e esforço de raciocínio NUNCA vêm do ~/.codex/config.toml: são obrigatórios aqui
-(valores escolhidos pelo autor em Q11: gpt-5.5 e medium, em author_choices do template) e ausentes/nulos/vazios/'nao_exposto' recusam a execução.
+(valores escolhidos pelo autor em Q11: gpt-5.6-luna e medium, em author_choices do template) e ausentes/nulos/vazios/'nao_exposto' recusam a execução.
 """
 
 import json
