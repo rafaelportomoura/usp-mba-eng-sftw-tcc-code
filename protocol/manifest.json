@@ -1,0 +1,295 @@
+{
+  "status": "FROZEN",
+  "frozen": true,
+  "protocol_version": "v1.0.0",
+  "seed": 20261002,
+  "design": "aleatorizacao restrita: bloco A (repeticoes 1-2, 12 execucoes) seguido do bloco B (repeticao 3, 6 execucoes)",
+  "shuffle": "Fisher-Yates sobre random.Random(seed).random()",
+  "timeout_s": 720,
+  "prompt_hashes": {
+    "controle": "d0a40b7a42cce93752db159f030f047dbf87dd136140860254c6a2d605ca69e8",
+    "explicacao": "85691e2c70d3c279221195c8d758e2304b66168b88cb8efa40d81ddf666a98b1"
+  },
+  "baseline_hashes": {
+    "t1_shipping": "e6e8f5c66af9d9d595e9ccea16d41b726864d4f069b0d121b54afde5ad22ecbc",
+    "t2_order_pricing": "c42c568b7360e690cc01410da202f7b1e01976541ab9edd94d271f73cc8a8fde",
+    "t3_inventory_reservation": "135bcd3cfefb4350e09eeb7ba69dba2564a5d622612c1147fe7c4cc5a6e4f5ea"
+  },
+  "execution_config": {
+    "_comment": "MODELO. Nada aqui esta preenchido nem congelado. Preencher em TCC-040 (pos-piloto) copiando para execution_config.json com o que a propria execucao reportar (nunca de memoria). Valor indisponivel em parametros de geracao: usar a string 'nao_exposto' (nunca null) e registrar a limitacao. O freeze recusa qualquer null e recusa vazio, 'nao_exposto' ou ausencia nos campos de replicabilidade do Codex: model.name, model.version_or_snapshot, agent.codex_version, agent.interface ('cli' ou 'api'), agent.invocation_command, agent.flags (lista; vazia = nenhuma flag), agent.sandbox_mode, agent.approval_policy, execution.working_directory, execution.date_first_run. A data de cada execucao fica em started_at e run_meta.json; a data da ultima execucao nao pertence ao arquivo congelado. Itens exigidos por Baltes et al. (2025, v8), secoes 5.1-5.4 (fichamento TCC-010).",
+    "author_choices": {
+      "_comment": "Valores ESCOLHIDOS pelo autor (Q11, 2026-10-02), nao observados em execucao. Ao criar execution_config.json (pos-piloto), copiar model_name para model.name e reasoning_effort para generation_parameters.reasoning_effort; o freeze recusa se divergirem. Nao ha snapshot nem versao do modelo aqui: model.version_or_snapshot continua sendo o que a propria execucao reportar. A existencia de gpt-5.6-luna com esforco medium foi conferida no models_cache do Codex local do autor, sem execucao.",
+      "model_name": "gpt-5.6-luna",
+      "reasoning_effort": "medium",
+      "decided_by": "autor",
+      "decision": "Q11"
+    },
+    "model": {
+      "role": "agente gerador de codigo, unico LLM do estudo, sem papel de avaliador",
+      "name": "gpt-5.6-luna",
+      "version_or_snapshot": "gpt-5.6-luna (identificador reportado pelo Codex nos eventos de sessão; snapshot separado não exposto)",
+      "provider": "OpenAI, via backend do Codex (chatgpt.com/backend-api/codex, observado na mensagem de erro dos pilotos excluídos)",
+      "fingerprint_or_checksum": "nao_exposto"
+    },
+    "agent": {
+      "tool": "Codex",
+      "codex_version": "0.154.0",
+      "interface": "cli",
+      "interface_note": "interface usada: 'cli' ou 'api'; a diferenca de superficie (CLI, API) deve ser descrita no metodo do TCC",
+      "invocation_command": "codex exec --json --output-last-message <last_message_file> --sandbox workspace-write --cd <workspace> --model <model.name> -c model_reasoning_effort=<reasoning_effort> --ignore-user-config --ignore-rules --skip-git-repo-check --color never - (prompt via stdin; CODEX_HOME descartavel)",
+      "flags": [
+        "--json",
+        "--output-last-message <last_message_file>",
+        "--sandbox workspace-write",
+        "--cd <workspace>",
+        "--model <model.name>",
+        "-c model_reasoning_effort=<generation_parameters.reasoning_effort>",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--color never",
+        "- (prompt via stdin)"
+      ],
+      "sandbox_mode": "workspace-write",
+      "approval_policy": "never",
+      "tools_enabled": "ferramentas padrão do Codex 0.154.0 (execução de comandos de shell e edição de arquivos observadas nos eventos); lista completa não exposta",
+      "agent_config_files": [],
+      "agent_config_hash": "nenhum arquivo de configuração de usuário carregado (--ignore-user-config, --ignore-rules)",
+      "vendor_system_prompt": "nao acessivel ao pesquisador; registrar como limitacao"
+    },
+    "generation_parameters": {
+      "reasoning_effort": "medium",
+      "temperature": "nao_exposto",
+      "top_p": "nao_exposto",
+      "max_output_tokens": "nao_exposto",
+      "other_defaults_recorded": "padrões do Codex 0.154.0 para o modelo; não inspecionados nem alterados"
+    },
+    "execution": {
+      "session_policy": "uma sessao nova por execucao; sem memoria, historico ou conversa compartilhados",
+      "timeout_s": 720,
+      "human_intervention": "nenhuma durante a execucao",
+      "workspace": "copia temporaria gerada por harness.cli prepare (baseline, REQUIREMENTS.md, tests/)",
+      "working_directory": "workspace temporário por execução em ~/.cache/tcc-scratch/<run_id>/workspace (gerado por harness.cli prepare)",
+      "network_policy": "network_access=false no sandbox workspace-write (observado em turn_context da sessão dos pilotos P1 e P2)",
+      "date_first_run": "2026-10-02",
+      "python_version": "3.14.7",
+      "platform": "Linux 7.2.5-3-omarchy x86_64"
+    },
+    "prompts": {
+      "controle": {
+        "path": "protocol/prompts/controle.md",
+        "sha256": "d0a40b7a42cce93752db159f030f047dbf87dd136140860254c6a2d605ca69e8"
+      },
+      "explicacao": {
+        "path": "protocol/prompts/explicacao.md",
+        "sha256": "85691e2c70d3c279221195c8d758e2304b66168b88cb8efa40d81ddf666a98b1"
+      },
+      "prompt_development_history": "Prompts redigidos em rascunho por agente de IA e aprovados pelo autor; usados sem alteração nos pilotos P1 e P2 (2026-10-02, hashes iguais aos de prompt.txt). Nenhuma iteração posterior."
+    },
+    "logs": {
+      "per_run_directory": "runs/<run_id>/",
+      "required_files": [
+        "prompt.txt",
+        "agent_events.jsonl",
+        "final_message.md",
+        "workspace.diff",
+        "prepare.json",
+        "evaluation.json",
+        "run_meta.json"
+      ],
+      "native_log_format_note": "agent_events.jsonl: eventos JSONL (thread.started, turn.started, item.started/item.completed com command_execution, file_change e agent_message, turn.completed, turn.failed, error), observados nos pilotos P1 e P2; formato não documentado pelo fornecedor",
+      "exclusion_registry": "runs/exclusions.jsonl"
+    },
+    "executor_plan": {
+      "_comment": "DOCUMENTACAO do executor (executor/, TCC-040-prep). Nao substitui os campos agent.* acima, que continuam nulos ate o preenchimento pos-piloto; `python3 -m executor.cli flags` imprime os valores a copiar. Nada aqui foi observado em execucao real.",
+      "interface": "cli (codex exec nao interativo; decisao do autor em Q02)",
+      "codex_version_expected_by_author": "codex-cli 0.154.0 (Q02); o executor registra a saida real de `codex --version` e recusa divergencia se agent.codex_version estiver preenchido",
+      "sandbox_mode": "workspace-write (flag --sandbox; escopo de leitura do disco nao verificado)",
+      "user_config_policy": "--ignore-user-config e --ignore-rules; CODEX_HOME descartavel fora dos repositorios, HOME descartavel, ambiente por allowlist; modelo e esforco apenas via execution_config (model.name, generation_parameters.reasoning_effort); valores escolhidos pelo autor em Q11 (gpt-5.6-luna, medium) em author_choices, a copiar no preenchimento",
+      "credentials_policy": "copiadas em tempo de execucao de caminho explicito (--auth-file) para o CODEX_HOME descartavel, apagado ao final; nunca gravadas em repositorio; varredura e redacao de segredos em runs/<run_id>/",
+      "prompt_delivery": "bytes de protocol/prompts/<condicao>.md via stdin (argumento '-'); o enunciado da tarefa e REQUIREMENTS.md dentro do workspace",
+      "session_timeout_s": 720,
+      "session_kill": "SIGKILL ao grupo de processos (start_new_session)",
+      "approval_policy_note": "nao definido pelo executor; registrar o que o Codex reportar no piloto",
+      "network_policy_note": "nao verificado; registrar apos piloto"
+    }
+  },
+  "runs": [
+    {
+      "sequence": 1,
+      "run_id": "R01",
+      "task_id": "t1_shipping",
+      "condition": "controle",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 2,
+      "run_id": "R02",
+      "task_id": "t2_order_pricing",
+      "condition": "controle",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 3,
+      "run_id": "R03",
+      "task_id": "t2_order_pricing",
+      "condition": "explicacao",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 4,
+      "run_id": "R04",
+      "task_id": "t3_inventory_reservation",
+      "condition": "explicacao",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 5,
+      "run_id": "R05",
+      "task_id": "t1_shipping",
+      "condition": "explicacao",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 6,
+      "run_id": "R06",
+      "task_id": "t3_inventory_reservation",
+      "condition": "controle",
+      "replicate": 1,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 7,
+      "run_id": "R07",
+      "task_id": "t2_order_pricing",
+      "condition": "explicacao",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 8,
+      "run_id": "R08",
+      "task_id": "t2_order_pricing",
+      "condition": "controle",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 9,
+      "run_id": "R09",
+      "task_id": "t1_shipping",
+      "condition": "explicacao",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 10,
+      "run_id": "R10",
+      "task_id": "t3_inventory_reservation",
+      "condition": "controle",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 11,
+      "run_id": "R11",
+      "task_id": "t3_inventory_reservation",
+      "condition": "explicacao",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 12,
+      "run_id": "R12",
+      "task_id": "t1_shipping",
+      "condition": "controle",
+      "replicate": 2,
+      "block": "A",
+      "fallback": true
+    },
+    {
+      "sequence": 13,
+      "run_id": "R13",
+      "task_id": "t1_shipping",
+      "condition": "explicacao",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    },
+    {
+      "sequence": 14,
+      "run_id": "R14",
+      "task_id": "t3_inventory_reservation",
+      "condition": "controle",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    },
+    {
+      "sequence": 15,
+      "run_id": "R15",
+      "task_id": "t2_order_pricing",
+      "condition": "controle",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    },
+    {
+      "sequence": 16,
+      "run_id": "R16",
+      "task_id": "t1_shipping",
+      "condition": "controle",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    },
+    {
+      "sequence": 17,
+      "run_id": "R17",
+      "task_id": "t2_order_pricing",
+      "condition": "explicacao",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    },
+    {
+      "sequence": 18,
+      "run_id": "R18",
+      "task_id": "t3_inventory_reservation",
+      "condition": "explicacao",
+      "replicate": 3,
+      "block": "B",
+      "fallback": false
+    }
+  ],
+  "fallback_run_ids": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12"
+  ]
+}

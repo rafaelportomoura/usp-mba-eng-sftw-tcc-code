@@ -1,0 +1,29 @@
+{
+  "protocol_version": "v1.0.0",
+  "frozen_at": "2026-10-02T06:24:57+00:00",
+  "seed": 20261002,
+  "release_ref": "/home/rafaelportomoura/Projects/personal/usp-mba-eng-sftw-tcc/.specs/tcc-auditabilidade/handoffs/TCC-030-rereview.md",
+  "release_ref_sha256": "7c656966455be83b8cc1a3783aaf8b06111daec52d179fe72703aaac778551d2",
+  "files": {
+    "PROTOCOL.md": "c01f3f23b546a7d5c9623983b86af220722e3427e6ca576ac16c9956e8b4788a",
+    "RUBRIC.md": "a7ad04e6584d15b1535b4571970140cff0c997666fec1edb500d2c89af87c859",
+    "taxonomy.py": "0a992bcfd1fa49a52fe412f3844945d029afdd7e51a9c4a4a2a7de5bb55d20aa",
+    "sensitivity.py": "9b18c30b0c932578d83667c28361fbf9989517379694e9874bdbff5d0aebe4bb",
+    "prompts/controle.md": "d0a40b7a42cce93752db159f030f047dbf87dd136140860254c6a2d605ca69e8",
+    "prompts/explicacao.md": "85691e2c70d3c279221195c8d758e2304b66168b88cb8efa40d81ddf666a98b1",
+    "schema/run_record.schema.json": "6c35415c70eaa3c6c3bebfe136e175ecae618b0520c26c80d176c93c4806e6b4",
+    "schema/results_header.csv": "44c48588b05adc8fd1a4a4b7c8d89824a7c0899447449c4acec2a3e71eb8a39b",
+    "schema/reevaluation_header.csv": "ae19b878b07a3df7c8e3e1cc1a4c117f8d5ad9ef60c0b9ffc6b23cda5793fb1f",
+    "config/execution_config.json": "5e4c33c5945fdbcbc847bbb11b51a4624d8227629cd725f402dd849c80845a5d"
+  },
+  "manifest_json_sha256": "64f0117563cda03caeb66cdb5e568731ef13c338bf2198da9b0f4d6566d2e5a4",
+  "prompt_hashes": {
+    "controle": "d0a40b7a42cce93752db159f030f047dbf87dd136140860254c6a2d605ca69e8",
+    "explicacao": "85691e2c70d3c279221195c8d758e2304b66168b88cb8efa40d81ddf666a98b1"
+  },
+  "baseline_hashes": {
+    "t1_shipping": "e6e8f5c66af9d9d595e9ccea16d41b726864d4f069b0d121b54afde5ad22ecbc",
+    "t2_order_pricing": "c42c568b7360e690cc01410da202f7b1e01976541ab9edd94d271f73cc8a8fde",
+    "t3_inventory_reservation": "135bcd3cfefb4350e09eeb7ba69dba2564a5d622612c1147fe7c4cc5a6e4f5ea"
+  }
+}
