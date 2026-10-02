@@ -1,0 +1,4 @@
+2026-10-02T06:51:32.804224Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /home/rafaelportomoura/.cache/tcc-scratch/R13/workspace/shipping.py:
+    def test_r6_express_rounds_half_up(self):
+        # 25% de 4000 = 1000; este caso também documenta o cálculo inteiro.
+        self.assertEqual(calculate_shipping(16, "national", 0, express=True), 5490 + 1373)

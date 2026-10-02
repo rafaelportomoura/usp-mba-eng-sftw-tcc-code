@@ -1,0 +1,25 @@
+{
+  "baseline_hash": "e6e8f5c66af9d9d595e9ccea16d41b726864d4f069b0d121b54afde5ad22ecbc",
+  "evaluation_bundle_hash": "095d94a84286bf67a7f11730aef73a05b76488d626f2e7147de331da8ab68e73",
+  "files": {
+    "REQUIREMENTS.md": "1f9d55765defa29b89d66c789ab744ecc20055f481c4bec601b72caf051ca73a",
+    "shipping.py": "a7ca34360e8b714547429b099559b0d3f1536102e55a6cb56fedd0466e32b437",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_public.py": "2f596a22fdad7e91b9f69550c862d3902889e4c7da8965a2b091214ab175c18b"
+  },
+  "git_commit": "fb0b8e55408e98704bbc52d50b7a9c92e3e33661",
+  "git_dirty": true,
+  "harness_hash": "33867ab3c0a6071931abbb7c1d8e676f99ecea53612b9d5d3889c8a00e924081",
+  "oracle_hash": "5c5813b614765d172dbfd277d8bcda7764ddcff7cc6343c25eb8332e0ebc0e31",
+  "platform": "Linux-7.2.5-3-omarchy-x86_64-with-glibc2.44",
+  "prepared_at": "2026-10-02T06:37:16+00:00",
+  "public_tests_hash": "f1bcbd45b9bac2423130799122538b59018000458a660b8a76621e734ef0dc61",
+  "python": "3.14.7",
+  "python_pinned": "3.14.7",
+  "requirements_hash": "1f9d55765defa29b89d66c789ab744ecc20055f481c4bec601b72caf051ca73a",
+  "run_id": "R05",
+  "task_evaluation_hash": "ae13a564c5e6089118f889a8d73e9c11f6a3219a5db063acf856ecd17186bbb3",
+  "task_id": "t1_shipping",
+  "workspace_hash": "267c41dfeb580a77903df8d386aefdc5aa870f37d0eb42ae948dc01589235bed",
+  "workspace_path": "/home/rafaelportomoura/.cache/tcc-scratch/R05/workspace"
+}

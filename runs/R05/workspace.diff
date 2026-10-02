@@ -1,0 +1,91 @@
+--- a/shipping.py
++++ b/shipping.py
+@@ -1,12 +1,39 @@
+-"""Cálculo de frete (baseline com defeitos)."""
++"""Cálculo de frete."""
++
++import math
+ 
+ 
+ def calculate_shipping(weight_kg, destination, subtotal_cents, express=False):
+-    base = {"local": 850, "regional": 1550}.get(destination, 2490)
+-    extra = int(weight_kg) - 1 if weight_kg > 1 else 0
+-    fee = base + extra * 200
+-    if subtotal_cents > 20000:
+-        fee = 0
++    if (
++        isinstance(weight_kg, bool)
++        or not isinstance(weight_kg, (int, float))
++        or weight_kg <= 0
++        or weight_kg > 30
++        or not math.isfinite(weight_kg)
++    ):
++        raise ValueError("weight_kg must be a finite number in (0, 30]")
++
++    if not isinstance(destination, str):
++        raise ValueError("destination must be a supported string")
++    destination = destination.strip().lower()
++    if destination not in {"local", "regional", "national"}:
++        raise ValueError("destination must be local, regional, or national")
++
++    if (
++        isinstance(subtotal_cents, bool)
++        or not isinstance(subtotal_cents, int)
++        or subtotal_cents < 0
++        or not isinstance(express, bool)
++    ):
++        raise ValueError("subtotal_cents or express has an invalid value")
++
++    base = {"local": 850, "regional": 1550, "national": 2490}[destination]
++    standard_fee = base + (math.ceil(weight_kg) - 1) * 200
++    express_fee = 0
+     if express:
+-        fee += fee * 25 // 100
+-    return fee
++        # Integer arithmetic implements rounding half up without float error.
++        express_fee = max(1000, (standard_fee * 25 + 50) // 100)
++
++    if subtotal_cents >= 20000:
++        standard_fee = 0
++    return standard_fee + express_fee
+--- a/tests/test_public.py
++++ b/tests/test_public.py
+@@ -21,6 +21,38 @@
+     def test_r6_express_minimum(self):
+         self.assertEqual(calculate_shipping(1, "local", 5000, express=True), 850 + 1000)
+ 
++    def test_r1_weight_validation_and_started_kg_boundaries(self):
++        self.assertEqual(calculate_shipping(1.01, "local", 0), 1050)
++        self.assertEqual(calculate_shipping(30, "local", 0), 850 + 29 * 200)
++        for weight in (0, -1, 10**1000, 30.1, float("inf"), float("nan"), True, "1"):
++            with self.subTest(weight=weight):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(weight, "local", 0)
++
++    def test_r2_destination_is_normalized_and_validated(self):
++        self.assertEqual(calculate_shipping(1, "  ReGiOnAl ", 0), 1550)
++        for destination in (None, 1, "mars", ""):
++            with self.subTest(destination=destination):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(1, destination, 0)
++
++    def test_r3_values_and_flag_are_validated(self):
++        self.assertEqual(calculate_shipping(1, "local", 0, express=False), 850)
++        for subtotal in (-1, True, 1.0, "0"):
++            with self.subTest(subtotal=subtotal):
++                with self.assertRaises(ValueError):
++                    calculate_shipping(1, "local", subtotal)
++        with self.assertRaises(ValueError):
++            calculate_shipping(1, "local", 0, express=1)
++
++    def test_r5_threshold_is_inclusive(self):
++        self.assertEqual(calculate_shipping(1, "national", 20000), 0)
++
++    def test_r6_express_uses_original_fee_and_rounds_half_up(self):
++        # 4050 * 25% = 1012.5, rounded upward to 1013.
++        self.assertEqual(calculate_shipping(17, "local", 0, express=True), 4050 + 1013)
++        self.assertEqual(calculate_shipping(1, "national", 20000, express=True), 1000)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
