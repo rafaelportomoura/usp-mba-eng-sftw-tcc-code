@@ -62,3 +62,13 @@ python3 -m executor.cli run-all --config CFG --manifest protocol/manifest.json -
 ```
 
 Execuções reais exigem `protocol/FREEZE.json` íntegro (`--allow-unfrozen` só para ensaios, registrado em `run_meta.json`).
+
+## Análise (TCC-070)
+
+```
+python3 -m analysis.cli consolidate     # fichas -> results/results.csv (e reevaluation.csv se houver passagem 2)
+python3 -m analysis.report              # results/results.csv -> results/tables/*.csv, tabelas.md e grafico_auditabilidade.svg
+python3 -m unittest analysis.tests.test_report
+```
+
+Só mediana, mínimo e máximo; sem teste de significância.

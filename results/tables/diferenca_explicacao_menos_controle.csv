@@ -1,0 +1,14 @@
+escopo,metrica,mediana_explicacao,mediana_controle,diferenca
+todas,auditability_total,10,3,7
+todas,trace_code,1,0,1
+todas,trace_tests,2,0,2
+todas,assumptions,1,0,1
+todas,risks,1,0,1
+todas,rationale,2,0,2
+todas,fidelity,2,2,0
+todas,reproducibility,2,1,1
+todas,ap_points,4,1,3
+todas,rp_points,9,0,9
+todas,output_words,330,33,297
+todas,duration_s,97.768,96.626,1.142
+todas,hidden_pass_rate,1.0,1.0,0.0

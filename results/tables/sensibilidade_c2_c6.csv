@@ -1,0 +1,10 @@
+variante,cortes,mediana_controle,mediana_explicacao,diferenca,execucoes_com_total_alterado,direcao_de_H1_muda
+oficial,oficiais,3,10,7,0,False
+c2_high_70,"{""c2_high"": 0.7}",3,10,7,0,False
+c2_high_80,"{""c2_high"": 0.8}",3,10,7,0,False
+c2_low_40,"{""c2_low"": 0.4}",3,10,7,0,False
+c2_low_60,"{""c2_low"": 0.6}",3,10,7,0,False
+c6_min2_4,"{""c6_min2"": 4}",3,10,7,1,False
+c6_min2_6,"{""c6_min2"": 6}",3,10,7,0,False
+c6_min1_2,"{""c6_min1"": 2}",3,10,7,0,False
+c6_min1_4,"{""c6_min1"": 4}",3,10,7,1,False

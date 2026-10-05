@@ -1,19 +1,19 @@
 blind_id,scored_at,trace_code,trace_tests,assumptions,risks,rationale,fidelity,reproducibility,auditability_total,claims_checked,claimdiv_validacao_entrada,claimdiv_regra_negocio,claimdiv_arredondamento_numerico,claimdiv_atomicidade_estado,claimdiv_idempotencia_conflito,claimdiv_contrato_api,claimdiv_outros,claimdiv_relato_verificacao,rp_assumptions,rp_risks,rp_traces,rp_confirmed,ap_decisions,ap_risks,ap_links,ap_confirmed,ap_from_summary,c2_valid_refs,c2_rest_declared,c6_claims,c6_material,c6_minor,err_validacao_entrada,err_regra_negocio,err_arredondamento_numerico,err_atomicidade_estado,err_idempotencia_conflito,err_contrato_api,err_outros,notes
-S07,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S17,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S18,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S22,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S01,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S05,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S19,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S09,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S11,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S04,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S03,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S24,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S10,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S20,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S21,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S13,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-S23,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+S07,2026-10-03T16:59:26-03:00,1,2,2,1,2,2,2,12,10,0,0,0,0,0,0,0,0,2,1,8,11,0,0,5,5,0,8,1,10,0,0,,,,,,,,C04: A linha 17 de `relatorio_final.md` pode ser lida como risco genérico; a nota fica 1 nas duas leituras.
+S17,2026-10-03T17:17:39-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,8,0,0,,,,,,,,"C01: Os temas das linhas 5 a 10 de relatorio_final.md, junto com o arquivo inventory.py na linha 1, contam como referência só ao arquivo para os 7 requisitos? (se o contrario: trace_code 0->1) | C07: O comando exato só aparece em `log_verificacao.md`, não em `relatorio_final.md`; conta como comando informado? (se o contrario: reproducibility 1->2) | RP: A lista de 'Incluído' (relatorio_final.md, linhas 5 a 10) conta como ligações requisito-código? (se o contrario: rp_traces 0->6) | AP: Conto como ligação os testes cujo nome identifica o requisito sem citar RN? (se o contrario: ap_links 5->0, ap_confirmed 6->1) | AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 5->0, ap_confirmed 6->1."
+S18,2026-10-03T17:18:04-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,,,,,,,,"AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 4->0, ap_confirmed 4->0."
+S22,2026-10-03T17:31:11-03:00,1,2,2,2,1,0,2,10,10,0,0,0,0,0,0,0,1,2,2,7,11,0,0,0,0,0,7,1,10,1,0,,,,,,,,"C06: A alegação sobre `git diff --check` é material ou só menor, já que o relatório admite que o diretório não é Git? (se o contrario: fidelity 0->1, c6_material 1->0, c6_minor 0->1, claimdiv_relato_verificacao 1->0) | AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 5->0, ap_confirmed 5->0."
+S01,2026-10-04T21:52:20-03:00,0,1,0,0,0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,5,0,4,0,0,,,,,,,,"C2 (referencia explicita, sem testes do baseline, 2026-10-04): Rn so por relatorio ou por rN em teste novo/alterado; nada inferido. Refs: R1,R2,R3,R5,R6 (testes novos); R4 so no teste do baseline, nao conta; sem referencia: R4,R7; restantes nao declarados sem teste."
+S05,2026-10-04T21:52:20-03:00,0,1,0,0,0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,5,6,0,5,0,3,0,0,,,,,,,,"C2 (referencia explicita, sem testes do baseline, 2026-10-04): Rn so por relatorio ou por rN em teste novo/alterado; nada inferido. Refs: R1,R2,R3,R5,R6 (testes novos); R4 so no teste do baseline, nao conta; sem referencia: R4,R7; restantes nao declarados sem teste."
+S19,2026-10-03T17:49:42-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,,,,,,,,"AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 4->0, ap_confirmed 4->0."
+S09,2026-10-03T17:55:39-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,,,,,,,,"AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 6->0, ap_confirmed 6->0."
+S11,2026-10-03T20:22:21-03:00,1,1,1,0,2,2,2,9,10,0,0,0,0,0,0,0,0,1,0,6,7,1,0,5,6,0,6,0,10,0,0,,,,,,,,
+S04,2026-10-03T20:30:33-03:00,1,2,2,1,2,2,2,12,10,0,0,0,0,0,0,0,0,2,0,8,10,0,0,4,4,0,8,1,10,0,0,,,,,,,,
+S03,2026-10-04T19:14:16-03:00,1,2,1,2,2,2,2,12,10,0,0,0,0,0,0,0,0,1,1,7,9,0,0,0,0,0,7,1,10,0,0,,,,,,,,"C04: Subclasses de dict e concorrência, na mesma linha 17 de relatorio_final.md, contam como dois riscos distintos? (se o contrario: risks 2->1) | RP: O relatório cita 'comportamentos concorrentes' (relatorio_final.md, linha 17) sem apontar código nem entrada. (se o contrario: rp_risks 1->2, rp_confirmed 9->10) | AP: O teste de isolamento de dados devolvidos também exercita `events` (R6), mas o nome não diz isso; conto R6 como ligação? (se o contrario: ap_links 5->6, ap_confirmed 5->6) | AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 5->0, ap_confirmed 5->0."
+S06,2026-10-04T21:52:21-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,,,,,,,,"C2 (referencia explicita, sem testes do baseline, 2026-10-04): Rn so por relatorio ou por rN em teste novo/alterado; nada inferido. Os testes com rN (R2,R3,R4,R5,R8) sao do baseline e nao ha tabela no relatorio; os testes novos nao citam Rn. Zero referencias. | AP (ligacao exige numero do requisito, 2026-10-04): nomes de teste novos sao descritivos e nenhum escreve Rn (nome, comentario, docstring, asserção ou resumo); ap_links 4->0, ap_confirmed 4->0."
+S24,2026-10-04T23:19:46-03:00,1,2,2,1,2,2,2,12,10,0,0,0,0,0,0,0,0,2,1,8,11,0,0,4,4,0,8,1,10,0,0,,,,,,,,
+S10,2026-10-04T19:58:18-03:00,1,1,1,1,1,2,2,9,10,0,0,0,0,0,0,0,0,1,0,6,7,1,0,5,6,0,6,0,10,0,0,,,,,,,,
+S20,2026-10-04T23:11:39-03:00,1,2,1,1,1,2,2,10,10,0,0,0,0,0,0,0,0,1,1,7,9,0,0,1,1,0,7,1,10,0,0,,,,,,,,
+S21,2026-10-04T23:12:07-03:00,0,0,0,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,10,0,0,,,,,,,,"C01: As linhas 3 e 4 de relatorio_final.md citam shipping.py sem ligar requisito; contam como referência só ao arquivo? (se o contrario: trace_code 0->1) | AP: O comentário 'Round standard_fee / 4 to the nearest cent, with ties upward' em shipping.py, linha 32, repete o R6; conto como decisão? (se o contrario: ap_decisions 1->2, ap_confirmed 1->2)"
+S13,2026-10-04T23:20:12-03:00,0,1,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,5,0,4,1,0,,,,,,,,
+S23,2026-10-04T23:16:59-03:00,1,1,0,0,1,2,2,7,10,0,0,0,0,0,0,0,0,0,0,6,6,0,0,7,7,0,6,0,10,0,0,,,,,,,,

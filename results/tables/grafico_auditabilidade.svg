@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="sans-serif" font-size="12">
+<rect width="760" height="380" fill="#ffffff"/>
+<text x="380.0" y="22" text-anchor="middle" font-size="14" font-weight="bold">Escore de auditabilidade (0 a 14) por tarefa e condição</text>
+<line x1="56" x2="740" y1="330.0" y2="330.0" stroke="#e3e3dd"/><text x="48" y="334.0" text-anchor="end">0</text>
+<line x1="56" x2="740" y1="290.0" y2="290.0" stroke="#e3e3dd"/><text x="48" y="294.0" text-anchor="end">2</text>
+<line x1="56" x2="740" y1="250.0" y2="250.0" stroke="#e3e3dd"/><text x="48" y="254.0" text-anchor="end">4</text>
+<line x1="56" x2="740" y1="210.0" y2="210.0" stroke="#e3e3dd"/><text x="48" y="214.0" text-anchor="end">6</text>
+<line x1="56" x2="740" y1="170.0" y2="170.0" stroke="#e3e3dd"/><text x="48" y="174.0" text-anchor="end">8</text>
+<line x1="56" x2="740" y1="130.0" y2="130.0" stroke="#e3e3dd"/><text x="48" y="134.0" text-anchor="end">10</text>
+<line x1="56" x2="740" y1="90.00000000000001" y2="90.00000000000001" stroke="#e3e3dd"/><text x="48" y="94.00000000000001" text-anchor="end">12</text>
+<line x1="56" x2="740" y1="50.0" y2="50.0" stroke="#e3e3dd"/><text x="48" y="54.0" text-anchor="end">14</text>
+<text x="170.0" y="366" text-anchor="middle" font-weight="bold">t1_shipping</text>
+<circle cx="110.39999999999999" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="124.39999999999999" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="138.39999999999998" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<line x1="96.39999999999999" x2="152.39999999999998" y1="270.0" y2="270.0" stroke="#5b6c8f" stroke-width="2.5"/><text x="124.39999999999999" y="338" text-anchor="middle" fill="#5b6c8f">controle</text><text x="124.39999999999999" y="351" text-anchor="middle" fill="#5b6c8f">mediana 3</text>
+<circle cx="201.6" cy="190.0" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="215.6" cy="150.0" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="229.6" cy="150.0" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<line x1="187.6" x2="243.6" y1="150.0" y2="150.0" stroke="#d9822b" stroke-width="2.5"/><text x="215.6" y="338" text-anchor="middle" fill="#d9822b">explicacao</text><text x="215.6" y="351" text-anchor="middle" fill="#d9822b">mediana 9</text>
+<text x="398.0" y="366" text-anchor="middle" font-weight="bold">t2_order_pricing</text>
+<circle cx="338.4" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="352.4" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="366.4" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<line x1="324.4" x2="380.4" y1="270.0" y2="270.0" stroke="#5b6c8f" stroke-width="2.5"/><text x="352.4" y="338" text-anchor="middle" fill="#5b6c8f">controle</text><text x="352.4" y="351" text-anchor="middle" fill="#5b6c8f">mediana 3</text>
+<circle cx="429.6" cy="90.00000000000001" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="443.6" cy="90.00000000000001" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="457.6" cy="90.00000000000001" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<line x1="415.6" x2="471.6" y1="90.00000000000001" y2="90.00000000000001" stroke="#d9822b" stroke-width="2.5"/><text x="443.6" y="338" text-anchor="middle" fill="#d9822b">explicacao</text><text x="443.6" y="351" text-anchor="middle" fill="#d9822b">mediana 12</text>
+<text x="626.0" y="366" text-anchor="middle" font-weight="bold">t3_inventory_reservation</text>
+<circle cx="566.4" cy="290.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="580.4" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<circle cx="594.4" cy="270.0" r="5" fill="#5b6c8f" fill-opacity="0.85"/>
+<line x1="552.4" x2="608.4" y1="270.0" y2="270.0" stroke="#5b6c8f" stroke-width="2.5"/><text x="580.4" y="338" text-anchor="middle" fill="#5b6c8f">controle</text><text x="580.4" y="351" text-anchor="middle" fill="#5b6c8f">mediana 3</text>
+<circle cx="657.6" cy="130.0" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="671.6" cy="130.0" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<circle cx="685.6" cy="90.00000000000001" r="5" fill="#d9822b" fill-opacity="0.85"/>
+<line x1="643.6" x2="699.6" y1="130.0" y2="130.0" stroke="#d9822b" stroke-width="2.5"/><text x="671.6" y="338" text-anchor="middle" fill="#d9822b">explicacao</text><text x="671.6" y="351" text-anchor="middle" fill="#d9822b">mediana 10</text>
+</svg>
