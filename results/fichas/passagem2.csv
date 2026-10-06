@@ -1,7 +1,7 @@
 blind_id,scored_at,trace_code,trace_tests,assumptions,risks,rationale,fidelity,reproducibility,auditability_total,notes
-S16,,,,,,,,,,
-S08,,,,,,,,,,
-S14,,,,,,,,,,
-S02,,,,,,,,,,
-S12,,,,,,,,,,
-S15,,,,,,,,,,
+S16,2026-10-06T01:28:55-03:00,1,2,2,1,2,2,2,12,
+S08,2026-10-06T01:24:38-03:00,0,1,0,0,0,1,1,3,"C05: O comentário em `workspace/shipping.py, linha 34` (arredondar 25% com meio para cima) conta como uma decisão justificada, mesmo só repetindo o R6? (se o contrario: rationale 0->1) | C06: Conto 'Ran 13 tests' e 'OK' como duas alegações separadas? (se o contrario: c6_claims 4->5, claims_checked 4->5, fidelity 1->2)"
+S14,2026-10-06T01:27:47-03:00,1,2,1,2,1,1,2,10,"RP: O relatório cita risco de concorrência entre chamadas simultâneas sem apontar código ou entrada. (se o contrario: rp_risks 1->2, rp_confirmed 9->10)"
+S02,2026-10-06T01:19:15-03:00,1,1,0,0,1,2,2,7,"C02: duvida aberta - a linha ""Verificado pelos 12 testes da suite"" para R7 (relatorio_final.md, linha 40) conta como declaracao de R7 sem teste dedicado? Adotado nao; se sim, trace_tests 1->2"
+S12,2026-10-06T01:24:11-03:00,0,0,0,0,0,2,1,3,
+S15,2026-10-06T01:29:33-03:00,0,0,0,0,0,2,1,3,"AP: O comentário em `reserve` (""Check all items before changing any stock, preserving atomicity"") conta como decisão, ou só repete o R2? (se o contrario: ap_decisions 0->1, ap_confirmed 0->1)"
